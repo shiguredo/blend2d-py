@@ -13,9 +13,7 @@ permissions:
 
 jobs:
   build_ubuntu:
-    if: false
     strategy:
-      fail-fast: false
       matrix:
         platform:
           - name: ubuntu-24.04_x86_64
