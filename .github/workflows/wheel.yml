@@ -72,7 +72,7 @@ jobs:
           uvx --from auditwheel auditwheel --version
           uvx --with patchelf --from auditwheel auditwheel show dist/*.whl || true
           # manylinux 互換の wheel に修復（ホスト上）
-          uvx --with patchelf --from auditwheel auditwheel repair dist/*.whl -w wheelhouse --plat ${{ matrix.platform.plat }}
+          uvx --with patchelf --from auditwheel auditwheel repair dist/*.whl -w wheelhouse --plat ${{ matrix.platform.plat }} --only-plat
       - name: Upload Repaired Wheels
         uses: actions/upload-artifact@v4
         with:
@@ -108,12 +108,12 @@ jobs:
           packages-dir: wheelhouse
           verbose: true
 
-  #     # 本番用
-  #     - name: Publish package to PyPI
-  #       uses: pypa/gh-action-pypi-publish@release/v1
-  #       with:
-  #         packages-dir: wheelhouse
-  #         password: ${{ secrets.PYPI_API_TOKEN }}
+      # 本番用
+      # - name: Publish package to PyPI
+      #   uses: pypa/gh-action-pypi-publish@release/v1
+      #   with:
+      #     password: ${{ secrets.PYPI_API_TOKEN }}
+      #     packages-dir: wheelhouse
 
   #     - name: Slack Notification
   #       if: failure()
