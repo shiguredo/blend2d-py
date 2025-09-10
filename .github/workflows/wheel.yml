@@ -18,7 +18,11 @@ jobs:
         platform:
           - name: macos-15_arm64
             runs_on: macos-15
+          - name: macos-14_arm64
+            runs_on: macos-14
         python_version:
+          - "3.11"
+          - "3.12"
           - "3.13"
     runs-on: ${{ matrix.platform.runs_on }}
     timeout-minutes: 20
@@ -49,6 +53,8 @@ jobs:
             runs_on: ubuntu-24.04-arm
             plat: manylinux_2_39_aarch64
         python_version:
+          - "3.11"
+          - "3.12"
           - "3.13"
     runs-on: ${{ matrix.platform.runs_on }}
     timeout-minutes: 15
@@ -90,7 +96,10 @@ jobs:
           - name: ubuntu-24.04_x86_64
           - name: ubuntu-24.04_arm64
           - name: macos-15_arm64
+          - name: macos-14_arm64
         python_version:
+          - "3.11"
+          - "3.12"
           - "3.13"
     runs-on: ubuntu-24.04
     timeout-minutes: 15
