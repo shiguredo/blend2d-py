@@ -38,12 +38,6 @@ Please read <https://github.com/shiguredo/oss/blob/master/README.en.md> before u
 uv add blend2d-py
 ```
 
-## ビルド
-
-```bash
-uv build --wheel
-```
-
 ## 使い方（最小 API）
 
 - 提供: `Image`, `Context`, `Path`, `CompOp`
@@ -183,30 +177,16 @@ ctx.end()
 - PRGB32（実質 BGRA）→ `cv2.cvtColor(..., cv2.COLOR_BGRA2BGR)` で表示。
 - 詳細手順と他のサンプルは `example/README.md` を参照。
 
+## ビルド
+
+```bash
+uv build --wheel
+```
+
 ## PEP 3118 バッファ
 
 - `Image.memoryview()` で `stride*height` バイトの 1D バッファを公開します
 - NumPy での多次元化や OpenCV 表示は `doc/buffer.md` を参照してください
-
-## ライセンス
-
-Apache License 2.0
-
-```text
-Copyright 2025-2025, Shiguredo Inc.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```
 
 ## Blend2D ライセンス
 
@@ -230,4 +210,24 @@ freely, subject to the following restrictions:
 2. Altered source versions must be plainly marked as such, and must not be
    misrepresented as being the original software.
 3. This notice may not be removed or altered from any source distribution.
+```
+
+## blend2d-py ライセンス
+
+Apache License 2.0
+
+```text
+Copyright 2025-2025, Shiguredo Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```
