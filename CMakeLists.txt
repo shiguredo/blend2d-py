@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 4.1)
 project(blend2d_py LANGUAGES CXX)
 
 # プラットフォームチェック
-if(NOT APPLE AND NOT UNIX)
-  message(FATAL_ERROR "This package supports macOS and Linux (Ubuntu).")
+if(NOT APPLE AND NOT UNIX AND NOT WIN32)
+  message(FATAL_ERROR "This package supports macOS, Linux (Ubuntu), and Windows.")
 endif()
 
 # Python / nanobind
@@ -46,6 +46,7 @@ ExternalProject_Add(blend2d_ep
   BUILD_BYPRODUCTS
     ${BLEND2D_INSTALL}/lib/libblend2d.a
     ${BLEND2D_INSTALL}/lib64/libblend2d.a
+    ${BLEND2D_INSTALL}/lib/blend2d.lib
 )
 
 ## リンクディレクトリ経由で名前でリンク（静的/共有両方で動作）
@@ -78,6 +79,8 @@ if(APPLE)
   target_link_libraries(_blend2d PRIVATE ${BLEND2D_LINK_TARGET} Threads::Threads)
 elseif(UNIX)
   target_link_libraries(_blend2d PRIVATE ${BLEND2D_LINK_TARGET} Threads::Threads rt)
+elseif(WIN32)
+  target_link_libraries(_blend2d PRIVATE ${BLEND2D_LINK_TARGET} Threads::Threads)
 endif()
 
 target_compile_options(_blend2d PRIVATE -fvisibility=hidden)
