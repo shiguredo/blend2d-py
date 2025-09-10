@@ -19,6 +19,8 @@ Please read <https://github.com/shiguredo/oss/blob/master/README.en.md> before u
 
 高性能 2D ベクターグラフィックエンジン [blend2d](https://blend2d.com/) の Python バインディングです。
 
+[![Image from Gyazo](https://i.gyazo.com/87e61ff612c80c08e36380847b553196.gif)](https://gyazo.com/87e61ff612c80c08e36380847b553196)
+
 ## 対応プラットフォーム
 
 - macOS 15 arm64
