@@ -37,19 +37,17 @@ jobs:
           name: ${{ matrix.platform.name }}_python-${{ matrix.python_version }}
           path: wheelhouse/*.whl
 
-  build_manylinux:
+  build_ubuntu:
     strategy:
       fail-fast: false
       matrix:
         platform:
           - name: ubuntu-24.04_x86_64
             runs_on: ubuntu-24.04
-            glibc: 2_39
-            arch: x86_64
+            plat: manylinux_2_39_x86_64
           - name: ubuntu-24.04_arm64
             runs_on: ubuntu-24.04-arm
-            glibc: 2_39
-            arch: aarch64
+            plat: manylinux_2_39_aarch64
         python_version:
           - "3.13"
     runs-on: ${{ matrix.platform.runs_on }}
@@ -74,7 +72,7 @@ jobs:
           uvx --from auditwheel auditwheel --version
           uvx --with patchelf --from auditwheel auditwheel show dist/*.whl || true
           # manylinux 互換の wheel に修復（ホスト上）
-          uvx --with patchelf --from auditwheel auditwheel repair dist/*.whl -w wheelhouse --plat manylinux_${{ matrix.glibc }}_${{ matrix.platform.arch }}
+          uvx --with patchelf --from auditwheel auditwheel repair dist/*.whl -w wheelhouse --plat ${{ matrix.platform.plat }}
       - name: Upload Repaired Wheels
         uses: actions/upload-artifact@v4
         with:
@@ -83,7 +81,7 @@ jobs:
   publish_wheel:
     if: contains(github.ref, 'tags/202')
     needs:
-      - build_manylinux
+      - build_ubuntu
       - build_macos
     strategy:
       fail-fast: false
