@@ -43,9 +43,7 @@ jobs:
           path: "dist/"
 
   build_macos:
-    if: false
     strategy:
-      fail-fast: false
       matrix:
         platform:
           - name: macos-15_arm64
