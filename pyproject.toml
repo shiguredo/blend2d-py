@@ -1,0 +1,54 @@
+[project]
+name = "blend2d-py"
+dynamic = ["version"]
+description = "Python bindings for Blend2D (via nanobind)"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: C++",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Microsoft :: Windows",
+]
+requires-python = ">=3.11"
+
+[project.urls]
+Source = "https://github.com/shiguredo/blend2d-py"
+Discord = "https://discord.gg/shiguredo"
+
+[build-system]
+requires = ["scikit-build-core>=0.11", "nanobind>=2.9"]
+build-backend = "scikit_build_core.build"
+
+[tool.scikit-build]
+minimum-version = "0.11"
+sdist.include = ["VERSION"]
+
+[tool.scikit-build.cmake]
+define = { "CMAKE_CXX_STANDARD" = "17" }
+args = ["-DBUILD_TESTING=OFF"]
+
+[tool.scikit-build.build]
+verbose = false
+
+[tool.scikit-build.wheel]
+packages = ["src/blend2d"]
+expand-macos-universal-tags = true
+
+[tool.scikit-build.metadata.version]
+provider = "scikit_build_core.metadata.regex"
+input = "VERSION"
+regex = "^(?P<value>.+)$"
+
+[dependency-groups]
+dev = ["ruff", "ty"]
+
+[project.optional-dependencies]
+numpy = ["numpy>=2,<2.3"]
+viz = ["opencv-python==4.12.0.88"]
