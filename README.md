@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/blend2d-py)](https://pypi.org/project/blend2d-py/)
 [![image](https://img.shields.io/pypi/pyversions/blend2d-py.svg)](https://pypi.python.org/pypi/blend2d-py)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Actions status](https://github.com/shiguredo/blend2d-py/workflows/build/badge.svg)](https://github.com/shiguredo/blend2d-py/actions)
+[![Actions status](https://github.com/shiguredo/blend2d-py/workflows/wheel/badge.svg)](https://github.com/shiguredo/blend2d-py/actions)
 
 ## About Shiguredo's open source software
 
