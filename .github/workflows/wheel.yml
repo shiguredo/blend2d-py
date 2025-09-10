@@ -99,17 +99,13 @@ jobs:
         with:
           name: ${{ matrix.platform.name }}_python-${{ matrix.python_version }}
           path: wheelhouse/
-      - run: |
-          if [ -e wheelhouse/*.wheel ]; then
-            mv wheelhouse/*.wheel ./
-          fi
-
       # テスト用
       - name: Publish package to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository-url: https://test.pypi.org/legacy/
+          packages-dir: wheelhouse
           verbose: true
 
   #     # 本番用
