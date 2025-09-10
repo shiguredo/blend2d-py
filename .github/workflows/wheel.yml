@@ -101,6 +101,8 @@ jobs:
         platform:
           - name: ubuntu-24.04_x86_64
           - name: ubuntu-24.04_arm64
+          - name: ubuntu-22.04_x86_64
+          - name: ubuntu-22.04_arm64
           - name: macos-15_arm64
           - name: macos-14_arm64
         python_version:
