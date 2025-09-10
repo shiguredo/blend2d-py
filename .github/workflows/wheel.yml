@@ -120,18 +120,17 @@ jobs:
           name: ${{ matrix.platform.name }}_python-${{ matrix.python_version }}
           path: wheelhouse/
       # テスト用
-      - name: Publish package to TestPyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
-          packages-dir: wheelhouse
-          verbose: true
-
-      # 本番用
-      # - name: Publish package to PyPI
+      # - name: Publish package to TestPyPI
       #   uses: pypa/gh-action-pypi-publish@release/v1
       #   with:
+      #     repository-url: https://test.pypi.org/legacy/
       #     packages-dir: wheelhouse
+
+      # 本番用
+      - name: Publish package to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: wheelhouse
 
   #     - name: Slack Notification
   #       if: failure()
