@@ -1,0 +1,109 @@
+name: build
+
+on:
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - "**.md"
+      - "test/**"
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  build_ubuntu:
+    if: false
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - name: ubuntu-24.04_x86_64
+            runs_on: ubuntu-24.04
+          - name: ubuntu-24.04_arm64
+            runs_on: ubuntu-24.04-arm
+        python_version:
+          - "3.13"
+    runs-on: ${{ matrix.platform.runs_on }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: false
+      - name: Setup Python via uv
+        shell: bash
+        run: |
+          uv python pin ${{ matrix.python_version }}
+          uv sync
+      - name: Build wheel
+        run: uv build --wheel
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform.name }}_python-${{ matrix.python_version }}
+          path: "dist/"
+
+  build_macos:
+    if: false
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - name: macos-15_arm64
+            runs_on: macos-15
+        python_version:
+          - "3.13"
+    runs-on: ${{ matrix.platform.runs_on }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: false
+      - run: |
+          uv python pin ${{ matrix.python_version }}
+          uv sync
+      - run: uv build --wheel
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform.name }}_python-${{ matrix.python_version }}
+          path: "dist/"
+
+  build_manylinux:
+    name: manylinux_2_39_x86_64
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        python_version:
+          - "3.13"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: false
+      - name: Setup Python via uv
+        shell: bash
+        run: |
+          uv python pin ${{ matrix.python_version }}
+          uv sync
+      - name: Build wheel
+        run: uv build --wheel
+      - name: Repair wheel with auditwheel (uvx)
+        shell: bash
+        run: |
+          # GitHub Actions の bash は -e と -o pipefail が既定で有効
+          mkdir -p wheelhouse
+          # auditwheel と patchelf を一時ツール環境で実行
+          uvx --from auditwheel auditwheel --version
+          uvx --with patchelf --from auditwheel auditwheel show dist/*.whl || true
+          # manylinux 互換の wheel に修復（ホスト上）。非互換の場合は失敗します。
+          uvx --with patchelf --from auditwheel auditwheel repair dist/*.whl -w wheelhouse --plat manylinux_2_39_x86_64
+      - name: Upload Repaired Wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: manylinux_2_39_x86_64_python-${{ matrix.python_version }}
+          path: wheelhouse/*.whl
