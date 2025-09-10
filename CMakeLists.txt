@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 4.1)
 project(blend2d_py LANGUAGES CXX)
 
 # プラットフォームチェック
-if(NOT APPLE AND NOT UNIX)
-  message(FATAL_ERROR "This package supports macOS and Linux (Ubuntu).")
+if(NOT APPLE AND NOT UNIX AND NOT WIN32)
+  message(FATAL_ERROR "This package supports macOS, Linux (Ubuntu), and Windows.")
 endif()
 
 # Python / nanobind
@@ -46,6 +46,9 @@ ExternalProject_Add(blend2d_ep
   BUILD_BYPRODUCTS
     ${BLEND2D_INSTALL}/lib/libblend2d.a
     ${BLEND2D_INSTALL}/lib64/libblend2d.a
+    ${BLEND2D_INSTALL}/lib/blend2d.lib
+    ${BLEND2D_INSTALL}/lib/Release/blend2d.lib
+    ${BLEND2D_INSTALL}/lib/Debug/blend2d.lib
 )
 
 ## リンクディレクトリ経由で名前でリンク（静的/共有両方で動作）
@@ -64,7 +67,11 @@ target_link_directories(_blend2d PRIVATE ${BLEND2D_INSTALL}/lib ${BLEND2D_INSTAL
 # 可能なら事前にフルパスでライブラリを解決する（無ければ後段の名前解決に委ねる）
 find_library(BLEND2D_LIB
   NAMES blend2d
-  PATHS ${BLEND2D_INSTALL}/lib ${BLEND2D_INSTALL}/lib64
+  PATHS 
+    ${BLEND2D_INSTALL}/lib 
+    ${BLEND2D_INSTALL}/lib64
+    ${BLEND2D_INSTALL}/lib/Release
+    ${BLEND2D_INSTALL}/lib/Debug
   NO_DEFAULT_PATH
 )
 if(BLEND2D_LIB)
@@ -78,9 +85,17 @@ if(APPLE)
   target_link_libraries(_blend2d PRIVATE ${BLEND2D_LINK_TARGET} Threads::Threads)
 elseif(UNIX)
   target_link_libraries(_blend2d PRIVATE ${BLEND2D_LINK_TARGET} Threads::Threads rt)
+elseif(WIN32)
+  target_link_libraries(_blend2d PRIVATE ${BLEND2D_LINK_TARGET} Threads::Threads)
 endif()
 
-target_compile_options(_blend2d PRIVATE -fvisibility=hidden)
+# コンパイルオプションとマクロ定義
+# 静的ライブラリを使用しているため BL_STATIC を定義
+target_compile_definitions(_blend2d PRIVATE BL_STATIC)
+
+if(NOT WIN32)
+  target_compile_options(_blend2d PRIVATE -fvisibility=hidden)
+endif()
 
 set_target_properties(_blend2d PROPERTIES OUTPUT_NAME "_blend2d")
 

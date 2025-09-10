@@ -90,11 +90,43 @@ jobs:
         with:
           name: ${{ matrix.platform.name }}_python-${{ matrix.python_version }}
           path: wheelhouse/*.whl
+
+  build_windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - name: windows-2025_x86_64
+            runs_on: windows-2025
+        python_version:
+          - "3.11"
+          - "3.12"
+          - "3.13"
+    runs-on: ${{ matrix.platform.runs_on }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - name: Setup Python via uv
+        shell: bash
+        run: |
+          uv python pin ${{ matrix.python_version }}
+          uv sync
+      - name: Build wheel
+        run: uv build --wheel --out-dir wheelhouse
+      - name: Upload Wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform.name }}_python-${{ matrix.python_version }}
+          path: wheelhouse/*.whl
   publish_wheel:
     if: contains(github.ref, 'tags/202')
     needs:
       - build_ubuntu
       - build_macos
+      - build_windows
     strategy:
       fail-fast: false
       matrix:
@@ -105,6 +137,7 @@ jobs:
           - name: ubuntu-22.04_arm64
           - name: macos-15_arm64
           - name: macos-14_arm64
+          - name: windows-2025_x86_64
         python_version:
           - "3.11"
           - "3.12"
