@@ -5,7 +5,6 @@ description = "Python bindings for Blend2D (via nanobind)"
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
@@ -29,6 +28,7 @@ build-backend = "scikit_build_core.build"
 [tool.scikit-build]
 minimum-version = "0.11"
 sdist.include = ["VERSION"]
+build-dir = "_build"
 
 [tool.scikit-build.cmake]
 define = { "CMAKE_CXX_STANDARD" = "17" }
@@ -46,9 +46,14 @@ provider = "scikit_build_core.metadata.regex"
 input = "VERSION"
 regex = "^(?P<value>.+)$"
 
-[dependency-groups]
-dev = ["ruff", "ty"]
+[tool.uv]
+package = true
+managed = true
+dev-dependencies = ["pytest", "pytest-timeout", "numpy", "ruff", "ty"]
 
-[project.optional-dependencies]
-numpy = ["numpy>=2,<2.3"]
-viz = ["opencv-python==4.12.0.88"]
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
