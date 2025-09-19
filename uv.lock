@@ -7,23 +7,27 @@ name = "blend2d-py"
 source = { editable = "." }
 
 [package.dev-dependencies]
-dev = [
+lint = [
+    { name = "ruff" },
+    { name = "ty" },
+]
+test = [
     { name = "numpy" },
     { name = "pytest" },
     { name = "pytest-timeout" },
-    { name = "ruff" },
-    { name = "ty" },
 ]
 
 [package.metadata]
 
 [package.metadata.requires-dev]
-dev = [
+lint = [
+    { name = "ruff" },
+    { name = "ty" },
+]
+test = [
     { name = "numpy" },
     { name = "pytest" },
     { name = "pytest-timeout" },
-    { name = "ruff" },
-    { name = "ty" },
 ]
 
 [[package]]

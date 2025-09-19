@@ -1,5 +1,6 @@
 [project]
 name = "blend2d-py"
+authors = [{ name = "Shiguredo Inc.", email = "contact+pypi@shiguredo.jp" }]
 dynamic = ["version"]
 description = "Python bindings for Blend2D (via nanobind)"
 readme = "README.md"
@@ -26,12 +27,17 @@ Discord = "https://discord.gg/shiguredo"
 requires = ["scikit-build-core>=0.11", "nanobind>=2.9"]
 build-backend = "scikit_build_core.build"
 
+[dependency-groups]
+test = ["pytest", "pytest-timeout", "numpy"]
+lint = ["ruff", "ty"]
+
 [tool.scikit-build]
 minimum-version = "0.11"
 sdist.include = ["VERSION"]
 build-dir = "_build"
 
 [tool.scikit-build.cmake]
+version = ">=4.1"
 define = { "CMAKE_CXX_STANDARD" = "17" }
 args = ["-DBUILD_TESTING=OFF"]
 
@@ -50,7 +56,7 @@ regex = "^(?P<value>.+)$"
 [tool.uv]
 package = true
 managed = true
-dev-dependencies = ["pytest", "pytest-timeout", "numpy", "ruff", "ty"]
+default-groups = ["test", "lint"]
 
 [tool.ruff]
 target-version = "py311"
