@@ -11,6 +11,9 @@
 
 ## develop
 
+- [ADD] macos-26 をビルドに追加する
+  - @voluntas
+
 ### misc
 
 ## 2025.1.0
