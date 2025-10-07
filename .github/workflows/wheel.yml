@@ -16,6 +16,8 @@ jobs:
     strategy:
       matrix:
         platform:
+          - name: macos-26_arm64
+            runs_on: macos-26
           - name: macos-15_arm64
             runs_on: macos-15
           - name: macos-14_arm64
