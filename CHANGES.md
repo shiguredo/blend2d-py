@@ -11,6 +11,8 @@
 
 ## develop
 
+- [ADD] Python 3.14 をサポートに追加する
+  - @voluntas
 - [ADD] macos-26 をビルドに追加する
   - @voluntas
 
