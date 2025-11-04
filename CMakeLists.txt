@@ -13,7 +13,7 @@ find_package(nanobind CONFIG REQUIRED)
 include(ExternalProject)
 
 # ソース取得（ミラー）
-set(BLEND2D_URL "https://oss-mirrors.shiguredo.jp/blend2d-0.20.0.tar.gz" CACHE STRING "Blend2D source tarball URL")
+set(BLEND2D_URL "https://oss-mirrors.shiguredo.jp/blend2d-0.21.2.tar.gz" CACHE STRING "Blend2D source tarball URL")
 
 # レイアウト: ダウンロードしたソースは _source 下、ビルド済み + インストール済みバイナリは _build 下
 # SKBUILD_PROJECT_DIR が利用可能な場合は使用（scikit-build-core）、そうでなければ CMAKE_CURRENT_SOURCE_DIR にフォールバック
