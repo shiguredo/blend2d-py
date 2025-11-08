@@ -1,3 +1,7 @@
+[build-system]
+requires = ["scikit-build-core>=0.11", "nanobind>=2.9"]
+build-backend = "scikit_build_core.build"
+
 [project]
 name = "blend2d-py"
 authors = [{ name = "Shiguredo Inc.", email = "contact+pypi@shiguredo.jp" }]
@@ -23,13 +27,12 @@ requires-python = ">=3.11"
 Source = "https://github.com/shiguredo/blend2d-py"
 Discord = "https://discord.gg/shiguredo"
 
-[build-system]
-requires = ["scikit-build-core>=0.11", "nanobind>=2.9"]
-build-backend = "scikit_build_core.build"
 
 [dependency-groups]
+dev = [{ include-group = "lint" }, { include-group = "test" }]
 test = ["pytest", "pytest-timeout", "numpy"]
 lint = ["ruff", "ty"]
+pypi = ["auditwheel", "patchelf"]
 
 [tool.scikit-build]
 minimum-version = "0.11"
@@ -54,9 +57,8 @@ input = "VERSION"
 regex = "^(?P<value>.+)$"
 
 [tool.uv]
-package = true
+package = false
 managed = true
-default-groups = ["test", "lint"]
 
 [tool.ruff]
 target-version = "py311"
