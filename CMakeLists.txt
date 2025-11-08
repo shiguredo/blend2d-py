@@ -15,7 +15,7 @@ include(ExternalProject)
 # ソース取得（ミラー）
 set(BLEND2D_URL "https://oss-mirrors.shiguredo.jp/blend2d-0.20.0.tar.gz" CACHE STRING "Blend2D source tarball URL")
 
-# レイアウト: ダウンロードしたソースは _source 下、ビルド済み + インストール済みバイナリは _build 下
+# レイアウト: ExternalProject の依存関係は _deps 配下で管理
 # SKBUILD_PROJECT_DIR が利用可能な場合は使用（scikit-build-core）、そうでなければ CMAKE_CURRENT_SOURCE_DIR にフォールバック
 if(DEFINED SKBUILD_PROJECT_DIR)
   set(PROJECT_ROOT "${SKBUILD_PROJECT_DIR}")
@@ -23,14 +23,14 @@ else()
   set(PROJECT_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 
-set(BLEND2D_SOURCE_DIR "${PROJECT_ROOT}/_source/blend2d")
-set(BLEND2D_BUILD_DIR  "${PROJECT_ROOT}/_build/blend2d")
-set(BLEND2D_INSTALL    "${PROJECT_ROOT}/_install")
+set(BLEND2D_SOURCE_DIR "${PROJECT_ROOT}/_deps/blend2d/source")
+set(BLEND2D_BUILD_DIR  "${PROJECT_ROOT}/_deps/blend2d/build")
+set(BLEND2D_INSTALL    "${PROJECT_ROOT}/_deps/blend2d/install")
 
 ExternalProject_Add(blend2d_ep
   URL                 ${BLEND2D_URL}
   SOURCE_DIR          ${BLEND2D_SOURCE_DIR}
-  BINARY_DIR          ${BLEND2D_BUILD_DIR}/build
+  BINARY_DIR          ${BLEND2D_BUILD_DIR}
   STAMP_DIR           ${BLEND2D_BUILD_DIR}/stamp
   TMP_DIR             ${BLEND2D_BUILD_DIR}/tmp
   UPDATE_COMMAND      ""
