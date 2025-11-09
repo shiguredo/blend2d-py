@@ -29,7 +29,7 @@ Discord = "https://discord.gg/shiguredo"
 
 
 [dependency-groups]
-dev = [{ include-group = "lint" }, { include-group = "test" }]
+dev = [{ include-group = "test" }, { include-group = "lint" }]
 test = ["pytest", "pytest-timeout", "numpy"]
 lint = ["ruff", "ty"]
 pypi = ["auditwheel", "patchelf"]
