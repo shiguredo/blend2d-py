@@ -59,6 +59,7 @@ regex = "^(?P<value>.+)$"
 [tool.uv]
 package = false
 managed = true
+python-preference = "only-managed"
 
 [tool.ruff]
 target-version = "py311"
