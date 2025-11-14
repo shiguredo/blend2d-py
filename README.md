@@ -180,17 +180,23 @@ ctx.end()
 > - `asarray()` / `memoryview()` のビューは `Image` の寿命に依存します
 > - フォント描画やエンコードは未ラップです
 
-## サンプル
-
-- 実行: `uv run python example/realtime_demo.py`
-- PRGB32（実質 BGRA）→ `cv2.cvtColor(..., cv2.COLOR_BGRA2BGR)` で表示。
-- 詳細手順と他のサンプルは `example/README.md` を参照。
-
 ## ビルド
 
 ```bash
 uv build --wheel
 ```
+
+## サンプル
+
+```bash
+uv sync --group example
+uv build --wheel
+uv pip install -e . --force-reinstall
+uv run python example/realtime_demo.py
+```
+
+- PRGB32（実質 BGRA）→ `cv2.cvtColor(..., cv2.COLOR_BGRA2BGR)` で表示
+- 詳細手順と他のサンプルは `example/README.md` を参照
 
 ## PEP 3118 バッファ
 
