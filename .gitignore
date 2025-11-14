@@ -10,6 +10,5 @@ wheels/
 .venv
 
 # ExternalProject outputs
-_source/
+_deps/
 _build/
-_install/

@@ -21,18 +21,22 @@ Please read <https://github.com/shiguredo/oss/blob/master/README.en.md> before u
 
 [![Image from Gyazo](https://i.gyazo.com/87e61ff612c80c08e36380847b553196.gif)](https://gyazo.com/87e61ff612c80c08e36380847b553196)
 
-120fps での映像なども描画可能です。
+120 fps での映像なども描画可能です。
 
 ## 対応プラットフォーム
 
+- macOS 26 arm64
 - macOS 15 arm64
 - macOS 14 arm64
 - Ubuntu 24.04 x86_64
 - Ubuntu 24.04 arm64
+- Ubuntu 22.04 x86_64
+- Ubuntu 22.04 arm64
 - Windows 11 x86_64
 
 ## 対応 Python
 
+- 3.14
 - 3.13
 - 3.12
 - 3.11
@@ -176,17 +180,23 @@ ctx.end()
 > - `asarray()` / `memoryview()` のビューは `Image` の寿命に依存します
 > - フォント描画やエンコードは未ラップです
 
-## サンプル
-
-- 実行: `uv run python example/realtime_demo.py`
-- PRGB32（実質 BGRA）→ `cv2.cvtColor(..., cv2.COLOR_BGRA2BGR)` で表示。
-- 詳細手順と他のサンプルは `example/README.md` を参照。
-
 ## ビルド
 
 ```bash
 uv build --wheel
 ```
+
+## サンプル
+
+```bash
+uv sync --group example
+uv build --wheel
+uv pip install -e . --force-reinstall
+uv run python example/realtime_demo.py
+```
+
+- PRGB32（実質 BGRA）→ `cv2.cvtColor(..., cv2.COLOR_BGRA2BGR)` で表示
+- 詳細手順と他のサンプルは `example/README.md` を参照
 
 ## PEP 3118 バッファ
 
