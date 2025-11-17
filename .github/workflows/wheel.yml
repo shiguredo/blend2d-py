@@ -90,7 +90,6 @@ jobs:
           - name: windows-2025_x86_64
             runs_on: windows-2025
         python_version:
-          - "3.11"
           - "3.12"
           - "3.13"
           - "3.14"
@@ -132,7 +131,6 @@ jobs:
           - name: macos-14_arm64
           - name: windows-2025_x86_64
         python_version:
-          - "3.11"
           - "3.12"
           - "3.13"
           - "3.14"
