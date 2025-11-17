@@ -11,6 +11,18 @@
 
 ## develop
 
+- [CHANGE] blend2d_ext に名前を変更する
+  - @voluntas
+- [CHANGE] `_deps` 以下の構成をバージョンありにする
+  - @voluntas
+- [CHANGE] `deps.json` を導入する
+  - @voluntas
+
+### misc
+
+- [ADD] `.markdownlint.jsonc` を追加する
+  - @voluntas
+
 ## 2025.2.0
 
 **リリース日**:: 2025-11-14
