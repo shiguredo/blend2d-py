@@ -22,6 +22,8 @@
 
 ### misc
 
+- [CHANGE] claude.yml の runs_os を ubuntu-slim に変更する
+  - @voluntas
 - [ADD] `.markdownlint.jsonc` を追加する
   - @voluntas
 
