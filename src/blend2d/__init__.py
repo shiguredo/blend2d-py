@@ -14,6 +14,7 @@ __all__ = [
     "CompOp",
 ]
 
+
 def version() -> str:
     """バインディングのバージョン/存在確認用。"""
     return _native_version()
