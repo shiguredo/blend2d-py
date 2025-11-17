@@ -11,6 +11,8 @@
 
 ## develop
 
+- [CHANGE] Python 3.11 のサポートを終了する
+  - @voluntas
 - [CHANGE] blend2d_ext に名前を変更する
   - @voluntas
 - [CHANGE] `_deps` 以下の構成をバージョンありにする
