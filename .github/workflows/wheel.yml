@@ -57,7 +57,6 @@ jobs:
           - name: ubuntu-22.04_arm64
             runs_on: ubuntu-22.04-arm
         python_version:
-          - "3.11"
           - "3.12"
           - "3.13"
           - "3.14"
