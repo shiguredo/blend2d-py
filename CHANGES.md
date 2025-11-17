@@ -19,6 +19,8 @@
   - @voluntas
 - [CHANGE] `deps.json` を導入する
   - @voluntas
+- [ADD] text 関連の処理を追加する
+  - @voluntas
 
 ### misc
 

@@ -30,6 +30,22 @@ struct PyPath {
   void close();
 };
 
+struct PyFontFace {
+  BLFontFace face;
+
+  PyFontFace();
+  void create_from_file(const std::string& filename);
+  std::string family_name() const;
+  uint32_t weight() const;
+};
+
+struct PyFont {
+  BLFont font;
+
+  PyFont(PyFontFace& face, float size);
+  float size() const;
+};
+
 struct DrawContext {
   BLContext ctx;
   bool ended = false;
@@ -52,4 +68,5 @@ struct DrawContext {
   void fill_circle(double cx, double cy, double r);
   void fill_pie(double cx, double cy, double r, double start, double sweep);
   void fill_path(PyPath& p);
+  void fill_utf8_text(double x, double y, PyFont& font, const std::string& text);
 };
