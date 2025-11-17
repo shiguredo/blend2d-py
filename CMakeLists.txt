@@ -56,7 +56,7 @@ ExternalProject_Add(blend2d_ep
 # nanobind モジュール
 nanobind_add_module(_blend2d
   NB_DOMAIN "blend2d"
-  src/bindings/bind.cpp
+  src/blend2d_ext.cpp
 )
 
 add_dependencies(_blend2d blend2d_ep)

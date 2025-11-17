@@ -1,113 +1,129 @@
-#include <blend2d/blend2d.h>
+#include "blend2d_ext.h"
 
-#include <Python.h>
-#include <nanobind/nanobind.h>
-#include <nanobind/ndarray.h>
-#include <nanobind/stl/optional.h>
-#include <nanobind/stl/string.h>
-#include <cstdint>
-#include <string>
-
-namespace nb = nanobind;
 using namespace nb::literals;
 
-struct PyImage {
-  BLImage img;
-  int width = 0;
-  int height = 0;
-
-  PyImage(int w, int h) : width(w), height(h) {
-    BLResult r = img.create(w, h, BL_FORMAT_PRGB32);
-    if (r != BL_SUCCESS) {
-      throw std::runtime_error("BLImage.create failed: " + std::to_string(r));
-    }
+// PyImage 実装
+PyImage::PyImage(int w, int h) : width(w), height(h) {
+  BLResult r = img.create(w, h, BL_FORMAT_PRGB32);
+  if (r != BL_SUCCESS) {
+    throw std::runtime_error("BLImage.create failed: " + std::to_string(r));
   }
+}
 
-  nb::object memoryview() {
-    BLImageData d;
-    BLResult r = img.get_data(&d);
-    if (r != BL_SUCCESS) {
-      throw std::runtime_error("BLImage.get_data failed: " + std::to_string(r));
-    }
-    Py_ssize_t size = (Py_ssize_t)d.stride * (Py_ssize_t)height;
-    PyObject* mv =
-        PyMemoryView_FromMemory((char*)d.pixel_data, size, PyBUF_WRITE);
-    if (!mv) {
-      throw nb::python_error();
-    }
-    return nb::steal<nb::object>(mv);
+nb::object PyImage::memoryview() {
+  BLImageData d;
+  BLResult r = img.get_data(&d);
+  if (r != BL_SUCCESS) {
+    throw std::runtime_error("BLImage.get_data failed: " + std::to_string(r));
   }
-
-  nb::object asarray() {
-    // 実装: memoryview -> numpy.frombuffer -> reshape / slice（ゼロコピー）
-    nb::object mv = memoryview();
-    nb::object np = nb::module_::import_("numpy");
-    nb::object uint8 = np.attr("uint8");
-    nb::object arr = np.attr("frombuffer")(mv, uint8);
-    // (H, -1)
-    arr =
-        arr.attr("reshape")(nb::make_tuple((Py_ssize_t)height, (Py_ssize_t)-1));
-    // [0:H, 0:W*4]
-    arr = arr.attr("__getitem__")(nb::make_tuple(
-        nb::slice((Py_ssize_t)0, (Py_ssize_t)height, (Py_ssize_t)1),
-        nb::slice((Py_ssize_t)0, (Py_ssize_t)width * 4, (Py_ssize_t)1)));
-    // (H, W, 4)
-    arr = arr.attr("reshape")(
-        nb::make_tuple((Py_ssize_t)height, (Py_ssize_t)width, (Py_ssize_t)4));
-    return arr;
+  Py_ssize_t size = (Py_ssize_t)d.stride * (Py_ssize_t)height;
+  PyObject* mv =
+      PyMemoryView_FromMemory((char*)d.pixel_data, size, PyBUF_WRITE);
+  if (!mv) {
+    throw nb::python_error();
   }
-};
+  return nb::steal<nb::object>(mv);
+}
 
-struct PyPath {
-  BLPath path;
+nb::object PyImage::asarray() {
+  // 実装: memoryview -> numpy.frombuffer -> reshape / slice (ゼロコピー)
+  nb::object mv = memoryview();
+  nb::object np = nb::module_::import_("numpy");
+  nb::object uint8 = np.attr("uint8");
+  nb::object arr = np.attr("frombuffer")(mv, uint8);
+  // (H, -1)
+  arr =
+      arr.attr("reshape")(nb::make_tuple((Py_ssize_t)height, (Py_ssize_t)-1));
+  // [0:H, 0:W*4]
+  arr = arr.attr("__getitem__")(nb::make_tuple(
+      nb::slice((Py_ssize_t)0, (Py_ssize_t)height, (Py_ssize_t)1),
+      nb::slice((Py_ssize_t)0, (Py_ssize_t)width * 4, (Py_ssize_t)1)));
+  // (H, W, 4)
+  arr = arr.attr("reshape")(
+      nb::make_tuple((Py_ssize_t)height, (Py_ssize_t)width, (Py_ssize_t)4));
+  return arr;
+}
 
-  void move_to(double x, double y) { path.move_to(x, y); }
-  void line_to(double x, double y) { path.line_to(x, y); }
-  void close() { path.close(); }
-};
+// PyPath 実装
+void PyPath::move_to(double x, double y) {
+  path.move_to(x, y);
+}
 
-struct DrawContext {
-  BLContext ctx;
-  bool ended = false;
+void PyPath::line_to(double x, double y) {
+  path.line_to(x, y);
+}
 
-  DrawContext(PyImage& img) : ctx(img.img) {}
-  ~DrawContext() {
-    if (!ended)
-      ctx.end();
+void PyPath::close() {
+  path.close();
+}
+
+// DrawContext 実装
+DrawContext::DrawContext(PyImage& img) : ctx(img.img) {}
+
+DrawContext::~DrawContext() {
+  if (!ended)
+    ctx.end();
+}
+
+void DrawContext::end() {
+  if (!ended) {
+    ctx.end();
+    ended = true;
   }
+}
 
-  void end() {
-    if (!ended) {
-      ctx.end();
-      ended = true;
-    }
-  }
-  void save() { ctx.save(); }
-  void restore() { ctx.restore(); }
-  void set_comp_op(BLCompOp op) { ctx.set_comp_op(op); }
+void DrawContext::save() {
+  ctx.save();
+}
 
-  void set_fill_style_rgba(uint32_t r,
-                           uint32_t g,
-                           uint32_t b,
-                           uint32_t a = 255) {
-    ctx.set_fill_style(
-        BLRgba32((uint8_t)r, (uint8_t)g, (uint8_t)b, (uint8_t)a));
-  }
-  void translate(double x, double y) { ctx.translate(x, y); }
-  void rotate(double rad) { ctx.rotate(rad); }
-  void fill_all() { ctx.fill_all(); }
-  void fill_rect(double x, double y, double w, double h) {
-    ctx.fill_rect(BLRect(x, y, w, h));
-  }
-  void fill_circle(double cx, double cy, double r) {
-    ctx.fill_circle(BLCircle(cx, cy, r));
-  }
-  void fill_pie(double cx, double cy, double r, double start, double sweep) {
-    ctx.fill_pie(cx, cy, r, start, sweep);
-  }
-  void fill_path(PyPath& p) { ctx.fill_path(p.path); }
-};
+void DrawContext::restore() {
+  ctx.restore();
+}
 
+void DrawContext::set_comp_op(BLCompOp op) {
+  ctx.set_comp_op(op);
+}
+
+void DrawContext::set_fill_style_rgba(uint32_t r,
+                                      uint32_t g,
+                                      uint32_t b,
+                                      uint32_t a) {
+  ctx.set_fill_style(BLRgba32((uint8_t)r, (uint8_t)g, (uint8_t)b, (uint8_t)a));
+}
+
+void DrawContext::translate(double x, double y) {
+  ctx.translate(x, y);
+}
+
+void DrawContext::rotate(double rad) {
+  ctx.rotate(rad);
+}
+
+void DrawContext::fill_all() {
+  ctx.fill_all();
+}
+
+void DrawContext::fill_rect(double x, double y, double w, double h) {
+  ctx.fill_rect(BLRect(x, y, w, h));
+}
+
+void DrawContext::fill_circle(double cx, double cy, double r) {
+  ctx.fill_circle(BLCircle(cx, cy, r));
+}
+
+void DrawContext::fill_pie(double cx,
+                           double cy,
+                           double r,
+                           double start,
+                           double sweep) {
+  ctx.fill_pie(cx, cy, r, start, sweep);
+}
+
+void DrawContext::fill_path(PyPath& p) {
+  ctx.fill_path(p.path);
+}
+
+// モジュール定義
 NB_MODULE(_blend2d, m) {
   m.doc() = "Blend2D bindings (nanobind) with realtime-friendly wrappers";
 
