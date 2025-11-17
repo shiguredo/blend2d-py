@@ -44,6 +44,38 @@ nb::object PyImage::asarray() {
   return arr;
 }
 
+// PyFontFace 実装
+PyFontFace::PyFontFace() {}
+
+void PyFontFace::create_from_file(const std::string& filename) {
+  BLResult r = face.create_from_file(filename.c_str());
+  if (r != BL_SUCCESS) {
+    throw std::runtime_error("BLFontFace.create_from_file failed: " +
+                             std::to_string(r));
+  }
+}
+
+std::string PyFontFace::family_name() const {
+  return std::string(face.family_name().data(), face.family_name().size());
+}
+
+uint32_t PyFontFace::weight() const {
+  return face.weight();
+}
+
+// PyFont 実装
+PyFont::PyFont(PyFontFace& face, float size) {
+  BLResult r = font.create_from_face(face.face, size);
+  if (r != BL_SUCCESS) {
+    throw std::runtime_error("BLFont.create_from_face failed: " +
+                             std::to_string(r));
+  }
+}
+
+float PyFont::size() const {
+  return font.size();
+}
+
 // PyPath 実装
 void PyPath::move_to(double x, double y) {
   path.move_to(x, y);
@@ -123,6 +155,13 @@ void DrawContext::fill_path(PyPath& p) {
   ctx.fill_path(p.path);
 }
 
+void DrawContext::fill_utf8_text(double x,
+                                  double y,
+                                  PyFont& font,
+                                  const std::string& text) {
+  ctx.fill_utf8_text(BLPoint(x, y), font.font, text.c_str(), text.size());
+}
+
 // モジュール定義
 NB_MODULE(_blend2d, m) {
   m.doc() = "Blend2D bindings (nanobind) with realtime-friendly wrappers";
@@ -163,6 +202,24 @@ NB_MODULE(_blend2d, m) {
            nb::sig("def line_to(self, x: float, y: float) -> None"))
       .def("close", &PyPath::close, nb::sig("def close(self) -> None"));
 
+  nb::class_<PyFontFace>(m, "FontFace")
+      .def(nb::init<>(), nb::sig("def __init__(self) -> None"))
+      .def("create_from_file", &PyFontFace::create_from_file, "filename"_a,
+           nb::sig("def create_from_file(self, filename: str) -> None"))
+      .def_prop_ro(
+          "family_name", [](const PyFontFace& s) { return s.family_name(); },
+          nb::sig("def family_name(self) -> str"))
+      .def_prop_ro(
+          "weight", [](const PyFontFace& s) { return s.weight(); },
+          nb::sig("def weight(self) -> int"));
+
+  nb::class_<PyFont>(m, "Font")
+      .def(nb::init<PyFontFace&, float>(), "face"_a, "size"_a,
+           nb::sig("def __init__(self, face: FontFace, size: float) -> None"))
+      .def_prop_ro(
+          "size", [](const PyFont& s) { return s.size(); },
+          nb::sig("def size(self) -> float"));
+
   nb::class_<DrawContext>(m, "Context")
       .def(nb::init<PyImage&>(), "image"_a,
            nb::sig("def __init__(self, image: Image) -> None"))
@@ -193,5 +250,9 @@ NB_MODULE(_blend2d, m) {
            nb::sig("def fill_pie(self, cx: float, cy: float, r: float, start: "
                    "float, sweep: float) -> None"))
       .def("fill_path", &DrawContext::fill_path, "path"_a,
-           nb::sig("def fill_path(self, path: Path) -> None"));
+           nb::sig("def fill_path(self, path: Path) -> None"))
+      .def("fill_utf8_text", &DrawContext::fill_utf8_text, "x"_a, "y"_a,
+           "font"_a, "text"_a,
+           nb::sig("def fill_utf8_text(self, x: float, y: float, font: Font, "
+                   "text: str) -> None"));
 }

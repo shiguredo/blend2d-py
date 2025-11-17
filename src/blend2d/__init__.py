@@ -4,6 +4,8 @@ from ._blend2d import (
     Context,
     Path,
     CompOp,
+    FontFace,
+    Font,
 )
 
 __all__ = [
@@ -12,6 +14,8 @@ __all__ = [
     "Context",
     "Path",
     "CompOp",
+    "FontFace",
+    "Font",
 ]
 
 
