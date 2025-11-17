@@ -48,7 +48,7 @@ uv add blend2d-py
 
 ## 使い方（最小 API）
 
-- 提供: `Image`, `Context`, `Path`, `CompOp`
+- 提供: `Image`, `Context`, `Path`, `CompOp`, `FontFace`, `Font`
 - ピクセルアクセス: `Image.asarray()` / `Image.memoryview()`（ゼロコピー）
 
 ### 基本的な円の描画
@@ -174,10 +174,40 @@ for i in range(num_circles):
 ctx.end()
 ```
 
+### テキスト描画 (macOS のみ)
+
+```python
+from blend2d import Image, Context, Font, FontFace
+
+w, h = 640, 480
+img = Image(w, h)
+ctx = Context(img)
+
+# 背景を白で塗りつぶし
+ctx.set_fill_style_rgba(255, 255, 255, 255)
+ctx.fill_all()
+
+# フォントをロード (macOS のシステムフォント)
+face = FontFace()
+face.create_from_file("/System/Library/Fonts/Helvetica.ttc")
+
+# フォントインスタンスを作成
+font = Font(face, 48.0)
+
+# テキストを描画
+ctx.set_fill_style_rgba(0, 0, 0, 255)
+ctx.fill_utf8_text(50, 100, font, "Hello, Blend2D!")
+
+ctx.end()
+```
+
+> [!NOTE]
+>
+> - テキスト描画機能は macOS のシステムフォントを使用するため、macOS でのみ動作します
+
 > [!WARNING]
 >
 > - `asarray()` / `memoryview()` のビューは `Image` の寿命に依存します
-> - フォント描画やエンコードは未ラップです
 
 ## ビルド
 
