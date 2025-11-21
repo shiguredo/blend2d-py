@@ -12,22 +12,7 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 
 ## 最優先: 描画に不可欠な機能
 
-### 1. Gradient (グラデーション)
-
-- [x] Linear Gradient (線形グラデーション)
-  - [x] create_linear
-  - [x] add_stop, reset_stops
-  - [x] ExtendMode 設定
-- [x] Radial Gradient (放射状グラデーション)
-  - [x] create_radial
-  - [x] add_stop, reset_stops
-- [x] Conic Gradient (円錐形グラデーション)
-  - [x] create_conic
-- [x] Context での Gradient 対応
-  - [x] set_fill_style_gradient
-  - [ ] set_stroke_style_gradient
-
-### 2. Pattern (パターン)
+### 1. Pattern (パターン)
 
 - [ ] Pattern クラス
   - [ ] create (Image ベース)
@@ -232,12 +217,14 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 ## 実装済み機能
 
 ### Image (基本機能)
+
 - [x] create (幅、高さ指定)
 - [x] width, height プロパティ
 - [x] memoryview() - PEP 3118 メモリビュー
 - [x] asarray() - NumPy 配列変換
 
 ### Context (基本描画)
+
 - [x] 初期化 (Image から)
 - [x] end(), save(), restore()
 - [x] set_comp_op() (SRC_COPY, SRC_OVER)
@@ -251,14 +238,28 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 - [x] fill_utf8_text()
 
 ### Path (基本機能)
+
 - [x] move_to()
 - [x] line_to()
 - [x] close()
 
 ### Font 関連
+
 - [x] FontFace: create_from_file(), family_name, weight
 - [x] Font: create_from_face(), size
 
+### Gradient (グラデーション)
+
+- [x] Gradient クラス
+- [x] Linear Gradient (線形グラデーション): create_linear
+- [x] Radial Gradient (放射状グラデーション): create_radial
+- [x] Conic Gradient (円錐形グラデーション): create_conic
+- [x] add_stop, reset_stops, stop_count
+- [x] ExtendMode, GradientType 列挙型
+- [x] Context: set_fill_style_gradient
+- [x] Context: set_stroke_style_gradient
+
 ### CompOp (部分実装)
+
 - [x] SRC_COPY
 - [x] SRC_OVER
