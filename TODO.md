@@ -12,16 +12,6 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 
 ## 最優先: 描画に不可欠な機能
 
-### 1. Pattern (パターン)
-
-- [ ] Pattern クラス
-  - [ ] create (Image ベース)
-  - [ ] set_area
-  - [ ] set_extend_mode
-  - [ ] set_transform
-- [ ] Context での Pattern 対応
-  - [ ] set_fill_style_pattern
-  - [ ] set_stroke_style_pattern
 
 ### 3. Matrix2D (変換行列)
 
@@ -37,25 +27,16 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
   - [ ] apply_transform
   - [ ] reset_transform
 
-### 4. Stroke (線描画)
+### 4. Stroke (線描画) - 部分実装
 
-- [ ] Context の Stroke メソッド
-  - [ ] stroke_rect
-  - [ ] stroke_circle
-  - [ ] stroke_path
+- [ ] Context の Stroke メソッド (未実装)
   - [ ] stroke_geometry
   - [ ] stroke_utf8_text
-- [ ] StrokeOptions
-  - [ ] width
-  - [ ] miter_limit
-  - [ ] start_cap, end_cap
-  - [ ] join
-  - [ ] dash_array
+- [ ] StrokeOptions (未実装)
+  - [ ] dash_array (破線パターン)
   - [ ] dash_offset
   - [ ] transform_order
-- [ ] Context での設定
-  - [ ] set_stroke_width
-  - [ ] set_stroke_options
+  - [ ] set_stroke_options (StrokeOptions 構造体を直接設定)
 
 ### 5. Path の曲線機能
 
@@ -258,6 +239,29 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 - [x] ExtendMode, GradientType 列挙型
 - [x] Context: set_fill_style_gradient
 - [x] Context: set_stroke_style_gradient
+
+### Pattern (パターン)
+
+- [x] Pattern クラス
+- [x] create (Image ベース)
+- [x] set_area
+- [x] reset_area
+- [x] set_extend_mode
+- [x] extend_mode プロパティ
+- [x] Context: set_fill_style_pattern
+- [x] Context: set_stroke_style_pattern
+
+### Stroke (線描画) - 部分実装
+
+- [x] Context: set_stroke_width
+- [x] Context: stroke_rect
+- [x] Context: stroke_circle
+- [x] Context: stroke_path
+- [x] StrokeCap enum: BUTT, SQUARE, ROUND, ROUND_REV, TRIANGLE, TRIANGLE_REV
+- [x] StrokeJoin enum: MITER_CLIP, MITER_BEVEL, MITER_ROUND, BEVEL, ROUND
+- [x] Context: set_stroke_miter_limit
+- [x] Context: set_stroke_join
+- [x] Context: set_stroke_caps
 
 ### CompOp (部分実装)
 

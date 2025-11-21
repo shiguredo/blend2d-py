@@ -7,6 +7,9 @@ from ._blend2d import (
     ExtendMode,
     GradientType,
     Gradient,
+    Pattern,
+    StrokeCap,
+    StrokeJoin,
     FontFace,
     Font,
 )
@@ -20,6 +23,9 @@ __all__ = [
     "ExtendMode",
     "GradientType",
     "Gradient",
+    "Pattern",
+    "StrokeCap",
+    "StrokeJoin",
     "FontFace",
     "Font",
 ]

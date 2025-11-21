@@ -60,6 +60,17 @@ struct PyGradient {
   uint32_t extend_mode() const;
 };
 
+struct PyPattern {
+  BLPattern pattern;
+
+  PyPattern();
+  void create(PyImage& image, BLExtendMode extend_mode = BL_EXTEND_MODE_REPEAT);
+  void set_area(int x, int y, int w, int h);
+  void reset_area();
+  uint32_t extend_mode() const;
+  void set_extend_mode(BLExtendMode extend_mode);
+};
+
 struct DrawContext {
   BLContext ctx;
   bool ended = false;
@@ -76,11 +87,17 @@ struct DrawContext {
                            uint32_t b,
                            uint32_t a = 255);
   void set_fill_style_gradient(PyGradient& gradient);
+  void set_fill_style_pattern(PyPattern& pattern);
   void set_stroke_style_rgba(uint32_t r,
                               uint32_t g,
                               uint32_t b,
                               uint32_t a = 255);
   void set_stroke_style_gradient(PyGradient& gradient);
+  void set_stroke_style_pattern(PyPattern& pattern);
+  void set_stroke_width(double width);
+  void set_stroke_miter_limit(double miter_limit);
+  void set_stroke_join(BLStrokeJoin stroke_join);
+  void set_stroke_caps(BLStrokeCap stroke_cap);
   void translate(double x, double y);
   void rotate(double rad);
   void fill_all();
@@ -89,4 +106,7 @@ struct DrawContext {
   void fill_pie(double cx, double cy, double r, double start, double sweep);
   void fill_path(PyPath& p);
   void fill_utf8_text(double x, double y, PyFont& font, const std::string& text);
+  void stroke_rect(double x, double y, double w, double h);
+  void stroke_circle(double cx, double cy, double r);
+  void stroke_path(PyPath& p);
 };
