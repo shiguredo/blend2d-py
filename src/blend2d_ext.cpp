@@ -76,6 +76,61 @@ float PyFont::size() const {
   return font.size();
 }
 
+// PyGradient 実装
+PyGradient::PyGradient() {}
+
+void PyGradient::create_linear(double x0, double y0, double x1, double y1, BLExtendMode extend_mode) {
+  BLLinearGradientValues values(x0, y0, x1, y1);
+  BLResult r = gradient.create(values, extend_mode);
+  if (r != BL_SUCCESS) {
+    throw std::runtime_error("BLGradient.create (linear) failed: " +
+                             std::to_string(r));
+  }
+}
+
+void PyGradient::create_radial(double x0, double y0, double x1, double y1, double r0, BLExtendMode extend_mode, double r1) {
+  BLRadialGradientValues values(x0, y0, x1, y1, r0, r1);
+  BLResult r = gradient.create(values, extend_mode);
+  if (r != BL_SUCCESS) {
+    throw std::runtime_error("BLGradient.create (radial) failed: " +
+                             std::to_string(r));
+  }
+}
+
+void PyGradient::create_conic(double x0, double y0, double angle, BLExtendMode extend_mode, double repeat) {
+  BLConicGradientValues values(x0, y0, angle, repeat);
+  BLResult r = gradient.create(values, extend_mode);
+  if (r != BL_SUCCESS) {
+    throw std::runtime_error("BLGradient.create (conic) failed: " +
+                             std::to_string(r));
+  }
+}
+
+void PyGradient::add_stop(double offset, uint32_t r, uint32_t g, uint32_t b, uint32_t a) {
+  BLRgba32 color((uint8_t)r, (uint8_t)g, (uint8_t)b, (uint8_t)a);
+  BLResult result = gradient.add_stop(offset, color);
+  if (result != BL_SUCCESS) {
+    throw std::runtime_error("BLGradient.add_stop failed: " +
+                             std::to_string(result));
+  }
+}
+
+void PyGradient::reset_stops() {
+  gradient.reset_stops();
+}
+
+size_t PyGradient::stop_count() const {
+  return gradient.size();
+}
+
+uint32_t PyGradient::gradient_type() const {
+  return static_cast<uint32_t>(gradient.type());
+}
+
+uint32_t PyGradient::extend_mode() const {
+  return static_cast<uint32_t>(gradient.extend_mode());
+}
+
 // PyPath 実装
 void PyPath::move_to(double x, double y) {
   path.move_to(x, y);
@@ -121,6 +176,10 @@ void DrawContext::set_fill_style_rgba(uint32_t r,
                                       uint32_t b,
                                       uint32_t a) {
   ctx.set_fill_style(BLRgba32((uint8_t)r, (uint8_t)g, (uint8_t)b, (uint8_t)a));
+}
+
+void DrawContext::set_fill_style_gradient(PyGradient& gradient) {
+  ctx.set_fill_style(gradient.gradient);
 }
 
 void DrawContext::translate(double x, double y) {
@@ -178,6 +237,18 @@ NB_MODULE(_blend2d, m) {
       .value("SRC_OVER", BL_COMP_OP_SRC_OVER)
       .export_values();
 
+  nb::enum_<BLExtendMode>(m, "ExtendMode")
+      .value("PAD", BL_EXTEND_MODE_PAD)
+      .value("REPEAT", BL_EXTEND_MODE_REPEAT)
+      .value("REFLECT", BL_EXTEND_MODE_REFLECT)
+      .export_values();
+
+  nb::enum_<BLGradientType>(m, "GradientType")
+      .value("LINEAR", BL_GRADIENT_TYPE_LINEAR)
+      .value("RADIAL", BL_GRADIENT_TYPE_RADIAL)
+      .value("CONIC", BL_GRADIENT_TYPE_CONIC)
+      .export_values();
+
   nb::class_<PyImage>(m, "Image")
       .def(nb::init<int, int>(), "width"_a, "height"_a,
            nb::sig("def __init__(self, width: int, height: int) -> None"))
@@ -220,6 +291,28 @@ NB_MODULE(_blend2d, m) {
           "size", [](const PyFont& s) { return s.size(); },
           nb::sig("def size(self) -> float"));
 
+  nb::class_<PyGradient>(m, "Gradient")
+      .def(nb::init<>(), nb::sig("def __init__(self) -> None"))
+      .def("create_linear", &PyGradient::create_linear, "x0"_a, "y0"_a, "x1"_a, "y1"_a, "extend_mode"_a = BL_EXTEND_MODE_PAD,
+           nb::sig("def create_linear(self, x0: float, y0: float, x1: float, y1: float, extend_mode: ExtendMode = ExtendMode.PAD) -> None"))
+      .def("create_radial", &PyGradient::create_radial, "x0"_a, "y0"_a, "x1"_a, "y1"_a, "r0"_a, "extend_mode"_a = BL_EXTEND_MODE_PAD, "r1"_a = 0.0,
+           nb::sig("def create_radial(self, x0: float, y0: float, x1: float, y1: float, r0: float, extend_mode: ExtendMode = ExtendMode.PAD, r1: float = 0.0) -> None"))
+      .def("create_conic", &PyGradient::create_conic, "x0"_a, "y0"_a, "angle"_a, "extend_mode"_a = BL_EXTEND_MODE_PAD, "repeat"_a = 1.0,
+           nb::sig("def create_conic(self, x0: float, y0: float, angle: float, extend_mode: ExtendMode = ExtendMode.PAD, repeat: float = 1.0) -> None"))
+      .def("add_stop", &PyGradient::add_stop, "offset"_a, "r"_a, "g"_a, "b"_a, nb::arg("a") = 255,
+           nb::sig("def add_stop(self, offset: float, r: int, g: int, b: int, a: int = 255) -> None"))
+      .def("reset_stops", &PyGradient::reset_stops,
+           nb::sig("def reset_stops(self) -> None"))
+      .def_prop_ro(
+          "stop_count", [](const PyGradient& s) { return s.stop_count(); },
+          nb::sig("def stop_count(self) -> int"))
+      .def_prop_ro(
+          "gradient_type", [](const PyGradient& s) { return s.gradient_type(); },
+          nb::sig("def gradient_type(self) -> GradientType"))
+      .def_prop_ro(
+          "extend_mode", [](const PyGradient& s) { return s.extend_mode(); },
+          nb::sig("def extend_mode(self) -> ExtendMode"));
+
   nb::class_<DrawContext>(m, "Context")
       .def(nb::init<PyImage&>(), "image"_a,
            nb::sig("def __init__(self, image: Image) -> None"))
@@ -233,6 +326,8 @@ NB_MODULE(_blend2d, m) {
            "g"_a, "b"_a, nb::arg("a") = 255,
            nb::sig("def set_fill_style_rgba(self, r: int, g: int, b: int, a: "
                    "int = 255) -> None"))
+      .def("set_fill_style_gradient", &DrawContext::set_fill_style_gradient, "gradient"_a,
+           nb::sig("def set_fill_style_gradient(self, gradient: Gradient) -> None"))
       .def("translate", &DrawContext::translate, "x"_a, "y"_a,
            nb::sig("def translate(self, x: float, y: float) -> None"))
       .def("rotate", &DrawContext::rotate, "rad"_a,

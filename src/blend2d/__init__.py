@@ -4,6 +4,9 @@ from ._blend2d import (
     Context,
     Path,
     CompOp,
+    ExtendMode,
+    GradientType,
+    Gradient,
     FontFace,
     Font,
 )
@@ -14,6 +17,9 @@ __all__ = [
     "Context",
     "Path",
     "CompOp",
+    "ExtendMode",
+    "GradientType",
+    "Gradient",
     "FontFace",
     "Font",
 ]

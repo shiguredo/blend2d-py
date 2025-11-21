@@ -46,6 +46,20 @@ struct PyFont {
   float size() const;
 };
 
+struct PyGradient {
+  BLGradient gradient;
+
+  PyGradient();
+  void create_linear(double x0, double y0, double x1, double y1, BLExtendMode extend_mode = BL_EXTEND_MODE_PAD);
+  void create_radial(double x0, double y0, double x1, double y1, double r0, BLExtendMode extend_mode = BL_EXTEND_MODE_PAD, double r1 = 0.0);
+  void create_conic(double x0, double y0, double angle, BLExtendMode extend_mode = BL_EXTEND_MODE_PAD, double repeat = 1.0);
+  void add_stop(double offset, uint32_t r, uint32_t g, uint32_t b, uint32_t a);
+  void reset_stops();
+  size_t stop_count() const;
+  uint32_t gradient_type() const;
+  uint32_t extend_mode() const;
+};
+
 struct DrawContext {
   BLContext ctx;
   bool ended = false;
@@ -61,6 +75,7 @@ struct DrawContext {
                            uint32_t g,
                            uint32_t b,
                            uint32_t a = 255);
+  void set_fill_style_gradient(PyGradient& gradient);
   void translate(double x, double y);
   void rotate(double rad);
   void fill_all();
