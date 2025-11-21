@@ -76,6 +76,11 @@ struct DrawContext {
                            uint32_t b,
                            uint32_t a = 255);
   void set_fill_style_gradient(PyGradient& gradient);
+  void set_stroke_style_rgba(uint32_t r,
+                              uint32_t g,
+                              uint32_t b,
+                              uint32_t a = 255);
+  void set_stroke_style_gradient(PyGradient& gradient);
   void translate(double x, double y);
   void rotate(double rad);
   void fill_all();

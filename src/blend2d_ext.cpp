@@ -182,6 +182,17 @@ void DrawContext::set_fill_style_gradient(PyGradient& gradient) {
   ctx.set_fill_style(gradient.gradient);
 }
 
+void DrawContext::set_stroke_style_rgba(uint32_t r,
+                                        uint32_t g,
+                                        uint32_t b,
+                                        uint32_t a) {
+  ctx.set_stroke_style(BLRgba32((uint8_t)r, (uint8_t)g, (uint8_t)b, (uint8_t)a));
+}
+
+void DrawContext::set_stroke_style_gradient(PyGradient& gradient) {
+  ctx.set_stroke_style(gradient.gradient);
+}
+
 void DrawContext::translate(double x, double y) {
   ctx.translate(x, y);
 }
@@ -328,6 +339,12 @@ NB_MODULE(_blend2d, m) {
                    "int = 255) -> None"))
       .def("set_fill_style_gradient", &DrawContext::set_fill_style_gradient, "gradient"_a,
            nb::sig("def set_fill_style_gradient(self, gradient: Gradient) -> None"))
+      .def("set_stroke_style_rgba", &DrawContext::set_stroke_style_rgba, "r"_a,
+           "g"_a, "b"_a, nb::arg("a") = 255,
+           nb::sig("def set_stroke_style_rgba(self, r: int, g: int, b: int, a: "
+                   "int = 255) -> None"))
+      .def("set_stroke_style_gradient", &DrawContext::set_stroke_style_gradient, "gradient"_a,
+           nb::sig("def set_stroke_style_gradient(self, gradient: Gradient) -> None"))
       .def("translate", &DrawContext::translate, "x"_a, "y"_a,
            nb::sig("def translate(self, x: float, y: float) -> None"))
       .def("rotate", &DrawContext::rotate, "rad"_a,
