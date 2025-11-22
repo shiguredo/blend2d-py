@@ -58,7 +58,13 @@ def main():
         angle = 3.14159 * 2 * i / (points * 2) - 3.14159 / 2
         r = r_outer if i % 2 == 0 else r_inner
         x = cx + r * (angle**0 if angle == 0 else (angle / abs(angle)) * (abs(angle) ** 0.5) * 50)
-        y = cy + r * ((angle + 3.14159 / 2) ** 0 if angle == -3.14159 / 2 else ((angle + 3.14159 / 2) / abs(angle + 3.14159 / 2)) * (abs(angle + 3.14159 / 2) ** 0.5) * 50)
+        y = cy + r * (
+            (angle + 3.14159 / 2) ** 0
+            if angle == -3.14159 / 2
+            else ((angle + 3.14159 / 2) / abs(angle + 3.14159 / 2))
+            * (abs(angle + 3.14159 / 2) ** 0.5)
+            * 50
+        )
         # 簡易的な三角関数の代わり
         import math
 
