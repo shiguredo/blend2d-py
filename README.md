@@ -221,16 +221,16 @@ uv build --wheel
 uv sync --group example
 uv build --wheel
 uv pip install -e . --force-reinstall
-uv run python example/realtime_demo.py
+uv run python examples/realtime_demo.py
 ```
 
 - PRGB32（実質 BGRA）→ `cv2.cvtColor(..., cv2.COLOR_BGRA2BGR)` で表示
-- 詳細手順と他のサンプルは `example/README.md` を参照
+- 詳細手順と他のサンプルは `examples/README.md` を参照
 
 ## PEP 3118 バッファ
 
 - `Image.memoryview()` で `stride*height` バイトの 1D バッファを公開します
-- NumPy での多次元化や OpenCV 表示は `doc/buffer.md` を参照してください
+- NumPy での多次元化や OpenCV 表示は `docs/buffer.md` を参照してください
 
 ## Blend2D ライセンス
 
