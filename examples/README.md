@@ -16,12 +16,12 @@ uv sync
 
 以下はすべてリポジトリ直下で実行します。
 
-- 基本の円: `uv run python example/basic_circle.py`
-- 透明な四角形: `uv run python example/rectangles_transparency.py`
-- パスの描画: `uv run python example/path_drawing.py`
-- 複数図形の組み合わせ: `uv run python example/combined_shapes.py`
-- アニメーション: `uv run python example/animated_rectangles.py`
-- リアルタイム描画デモ: `uv run python example/realtime_demo.py`
+- 基本の円: `uv run python examples/basic_circle.py`
+- 透明な四角形: `uv run python examples/rectangles_transparency.py`
+- パスの描画: `uv run python examples/path_drawing.py`
+- 複数図形の組み合わせ: `uv run python examples/combined_shapes.py`
+- アニメーション: `uv run python examples/animated_rectangles.py`
+- リアルタイム描画デモ: `uv run python examples/realtime_demo.py`
 
 ヒント: OpenCV のウィンドウは `Ctrl-C` で終了できます。
 

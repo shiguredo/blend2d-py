@@ -46,9 +46,7 @@ def main():
 
     # 情報を描画（灰色）
     ctx.set_fill_style_rgba(128, 128, 128, 255)
-    ctx.fill_utf8_text(
-        50, 250, small_font, f"Font: {face.family_name} (Weight: {face.weight})"
-    )
+    ctx.fill_utf8_text(50, 250, small_font, f"Font: {face.family_name} (Weight: {face.weight})")
     ctx.fill_utf8_text(50, 290, small_font, f"Large: {large_font.size}px")
     ctx.fill_utf8_text(50, 330, small_font, f"Medium: {medium_font.size}px")
     ctx.fill_utf8_text(50, 370, small_font, f"Small: {small_font.size}px")
