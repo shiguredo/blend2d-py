@@ -11,6 +11,10 @@
 
 ## develop
 
+## 2025.3.0
+
+**リリース日**:: 2025-11-25
+
 - [CHANGE] Python 3.11 のサポートを終了する
   - @voluntas
 - [CHANGE] blend2d_ext に名前を変更する
