@@ -165,16 +165,16 @@ def main(width=1280, height=720, fps=60, num_shapes=20):
             r = random.randint(20, 60)
             shapes.append(MovingCircle(x, y, r, vx, vy, *color, alpha))
 
-    print(f"コーデックテスト用アニメーション")
+    print("コーデックテスト用アニメーション")
     print(f"解像度: {width}x{height}")
     print(f"FPS: {fps}")
     print(f"図形数: {num_shapes}")
-    print(f"ノイズキャッシュを生成中...")
+    print("ノイズキャッシュを生成中...")
 
     # ノイズパターンを事前生成（性能改善）
     noise_cache = generate_noise_cache(width, height, num_patterns=10, noise_intensity=40)
 
-    print(f"Ctrl-C または 'q' キーで終了します...")
+    print("Ctrl-C または 'q' キーで終了します...")
 
     # Image と Context を1回だけ作成（性能改善）
     img = Image(width, height)

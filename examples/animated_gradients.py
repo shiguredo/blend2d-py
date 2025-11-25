@@ -9,7 +9,7 @@ import math
 
 import cv2
 
-from blend2d import CompOp, Context, ExtendMode, Gradient, Image
+from blend2d import CompOp, Context, Gradient, Image
 
 
 class AnimatedLinearGradient:

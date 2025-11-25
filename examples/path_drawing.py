@@ -6,7 +6,7 @@ Path を使って三角形を作成し、グラデーション風の効果を加
 
 import cv2
 
-from blend2d import CompOp, Context, Image, Path
+from blend2d import Context, Image, Path
 
 
 def main():
