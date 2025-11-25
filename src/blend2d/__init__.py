@@ -4,6 +4,14 @@ from ._blend2d import (
     Context,
     Path,
     CompOp,
+    ExtendMode,
+    GradientType,
+    Gradient,
+    Pattern,
+    StrokeCap,
+    StrokeJoin,
+    FontFace,
+    Font,
 )
 
 __all__ = [
@@ -12,7 +20,16 @@ __all__ = [
     "Context",
     "Path",
     "CompOp",
+    "ExtendMode",
+    "GradientType",
+    "Gradient",
+    "Pattern",
+    "StrokeCap",
+    "StrokeJoin",
+    "FontFace",
+    "Font",
 ]
+
 
 def version() -> str:
     """バインディングのバージョン/存在確認用。"""

@@ -11,6 +11,28 @@
 
 ## develop
 
+## 2025.3.0
+
+**リリース日**:: 2025-11-25
+
+- [CHANGE] Python 3.11 のサポートを終了する
+  - @voluntas
+- [CHANGE] blend2d_ext に名前を変更する
+  - @voluntas
+- [CHANGE] `_deps` 以下の構成をバージョンありにする
+  - @voluntas
+- [CHANGE] `deps.json` を導入する
+  - @voluntas
+- [ADD] `Pattern` / `Stroke` / `Gradient` / `Text` を追加する
+  - @voluntas
+
+### misc
+
+- [CHANGE] claude.yml の runs_os を ubuntu-slim に変更する
+  - @voluntas
+- [ADD] `.markdownlint.jsonc` を追加する
+  - @voluntas
+
 ## 2025.2.0
 
 **リリース日**:: 2025-11-14

@@ -39,7 +39,6 @@ Please read <https://github.com/shiguredo/oss/blob/master/README.en.md> before u
 - 3.14
 - 3.13
 - 3.12
-- 3.11
 
 ## インストール
 
@@ -49,7 +48,7 @@ uv add blend2d-py
 
 ## 使い方（最小 API）
 
-- 提供: `Image`, `Context`, `Path`, `CompOp`
+- 提供: `Image`, `Context`, `Path`, `CompOp`, `FontFace`, `Font`
 - ピクセルアクセス: `Image.asarray()` / `Image.memoryview()`（ゼロコピー）
 
 ### 基本的な円の描画
@@ -175,10 +174,40 @@ for i in range(num_circles):
 ctx.end()
 ```
 
+### テキスト描画 (macOS のみ)
+
+```python
+from blend2d import Image, Context, Font, FontFace
+
+w, h = 640, 480
+img = Image(w, h)
+ctx = Context(img)
+
+# 背景を白で塗りつぶし
+ctx.set_fill_style_rgba(255, 255, 255, 255)
+ctx.fill_all()
+
+# フォントをロード (macOS のシステムフォント)
+face = FontFace()
+face.create_from_file("/System/Library/Fonts/Helvetica.ttc")
+
+# フォントインスタンスを作成
+font = Font(face, 48.0)
+
+# テキストを描画
+ctx.set_fill_style_rgba(0, 0, 0, 255)
+ctx.fill_utf8_text(50, 100, font, "Hello, Blend2D!")
+
+ctx.end()
+```
+
+> [!NOTE]
+>
+> - テキスト描画機能は macOS のシステムフォントを使用するため、macOS でのみ動作します
+
 > [!WARNING]
 >
 > - `asarray()` / `memoryview()` のビューは `Image` の寿命に依存します
-> - フォント描画やエンコードは未ラップです
 
 ## ビルド
 
@@ -192,16 +221,16 @@ uv build --wheel
 uv sync --group example
 uv build --wheel
 uv pip install -e . --force-reinstall
-uv run python example/realtime_demo.py
+uv run python examples/realtime_demo.py
 ```
 
 - PRGB32（実質 BGRA）→ `cv2.cvtColor(..., cv2.COLOR_BGRA2BGR)` で表示
-- 詳細手順と他のサンプルは `example/README.md` を参照
+- 詳細手順と他のサンプルは `examples/README.md` を参照
 
 ## PEP 3118 バッファ
 
 - `Image.memoryview()` で `stride*height` バイトの 1D バッファを公開します
-- NumPy での多次元化や OpenCV 表示は `doc/buffer.md` を参照してください
+- NumPy での多次元化や OpenCV 表示は `docs/buffer.md` を参照してください
 
 ## Blend2D ライセンス
 

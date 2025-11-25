@@ -13,9 +13,7 @@ import cv2
 from blend2d import CompOp, Context, Image, Path
 
 
-def draw_7segment(
-    ctx: Context, digit: int, x: float, y: float, w: float, h: float
-) -> None:
+def draw_7segment(ctx: Context, digit: int, x: float, y: float, w: float, h: float) -> None:
     # 7 セグメント (a,b,c,d,e,f,g)
     #  aaa
     # f   b
@@ -87,9 +85,7 @@ def draw_colon(ctx: Context, x: float, y: float, h: float) -> None:
     ctx.fill_circle(x + dot, y + h * 0.7, dot)
 
 
-def draw_digital_clock(
-    ctx: Context, start_time: float, width: int, height: int
-) -> None:
+def draw_digital_clock(ctx: Context, start_time: float, width: int, height: int) -> None:
     ms = int((time.perf_counter() - start_time) * 1000)
     hours = (ms // (60 * 60 * 1000)) % 10000
     minutes = (ms // (60 * 1000)) % 60
