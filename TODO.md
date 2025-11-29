@@ -20,6 +20,11 @@ blend2d 0.21.2 の Python バインディングで未実装の機能を優先度
 対応しない。Python では NumPy の numpy.random を利用する。
 numpy.random はベクトル化されており、1回の呼び出しで大量の乱数を生成できるため高速。
 
+### Image I/O (画像読み書き)
+
+対応しない。OpenCV や Pillow を利用する。
+blend2d は PNG/JPEG/BMP の内蔵コーデックを持つが、OpenCV の libjpeg-turbo の方が高速。
+
 ---
 
 ## 最優先: 描画に不可欠な機能
@@ -76,18 +81,7 @@ numpy.random はベクトル化されており、1回の呼び出しで大量の
 
 ## 高優先度: 実用的な描画に必要
 
-### 8. Image I/O
-
-- [ ] read_from_file
-  - [ ] 基本的な読み込み
-  - [ ] codec 指定
-- [ ] write_to_file
-  - [ ] 基本的な書き込み
-  - [ ] codec 指定
-- [ ] read_from_data (メモリバッファ)
-- [ ] write_to_data (メモリバッファ)
-
-### 9. Image の変換機能
+### 8. Image の変換機能
 
 - [ ] scale
   - [ ] NEAREST フィルタ
@@ -157,17 +151,7 @@ numpy.random はベクトル化されており、1回の呼び出しで大量の
 
 ## 中優先度: 特定用途で必要
 
-### 15. ImageCodec 関連
-
-- [ ] ImageCodec クラス
-  - [ ] built_in_codecs
-  - [ ] find_by_name
-  - [ ] find_by_extension
-  - [ ] find_by_data
-- [ ] ImageDecoder クラス
-- [ ] ImageEncoder クラス
-
-### 16. Font の高度な機能
+### 15. Font の高度な機能
 
 - [ ] FontManager
   - [ ] create
