@@ -1,42 +1,28 @@
 # blend2d-py TODO リスト
 
-blend2d の Python バインディングで未実装の機能を優先度順に整理。
+blend2d 0.21.2 の Python バインディングで未実装の機能を優先度順に整理。
 
 ## 凡例
 
 - [ ] 未実装
 - [x] 実装済み
-- [~] 実装中
+
+---
+
+## 対応しない機能
+
+### Matrix2D (変換行列)
+
+対応しない。Python では NumPy の ndarray を利用する。
+
+### Random (乱数)
+
+対応しない。Python では NumPy の numpy.random を利用する。
+numpy.random はベクトル化されており、1回の呼び出しで大量の乱数を生成できるため高速。
 
 ---
 
 ## 最優先: 描画に不可欠な機能
-
-
-### 3. Context の変換機能 (追加)
-
-現在 translate(), rotate() のみ実装。以下を追加:
-
-- [ ] scale(x, y) / scale(xy)
-- [ ] skew(x, y)
-- [ ] reset_transform()
-- [ ] rotate_around(angle, x, y)
-- [ ] transform(matrix) - Matrix2D 適用
-- [ ] post_translate, post_scale, post_skew, post_rotate
-
-### Matrix2D (変換行列)
-
-- [ ] Matrix2D クラス
-  - [ ] create (identity, translation, scaling, rotation)
-  - [ ] reset, reset_to_xxx
-  - [ ] translate, scale, rotate, skew
-  - [ ] transform (matrix 適用)
-  - [ ] invert
-  - [ ] map_point, map_vector
-- [ ] Context での Matrix 対応
-  - [ ] set_transform (直接設定)
-  - [ ] apply_transform (追加適用)
-  - [ ] get_transform (取得)
 
 ### 4. Stroke (線描画) - 部分実装
 
@@ -204,7 +190,6 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 - [ ] BitArray
 - [ ] BitSet
 - [ ] PixelConverter
-- [ ] Random
 - [ ] Runtime, RuntimeScope
 
 ---
