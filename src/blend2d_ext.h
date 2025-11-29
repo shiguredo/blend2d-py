@@ -75,7 +75,7 @@ struct DrawContext {
   BLContext ctx;
   bool ended = false;
 
-  DrawContext(PyImage& img);
+  DrawContext(PyImage& img, uint32_t thread_count = 0);
   ~DrawContext();
 
   void end();
