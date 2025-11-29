@@ -12,26 +12,24 @@ from blend2d import CompOp, Context, Image
 def main():
     w, h = 640, 480
     img = Image(w, h)
-    ctx = Context(img)
 
-    # 背景を白で塗りつぶし
-    ctx.set_fill_style_rgba(255, 255, 255, 255)
-    ctx.fill_all()
+    with Context(img) as ctx:
+        # 背景を白で塗りつぶし
+        ctx.set_fill_style_rgba(255, 255, 255, 255)
+        ctx.fill_all()
 
-    # 半透明の赤い四角形を描画
-    ctx.set_comp_op(CompOp.SRC_OVER)  # アルファブレンディングを有効化
-    ctx.set_fill_style_rgba(255, 0, 0, 128)  # 赤、50% 透明
-    ctx.fill_rect(50, 50, 200, 150)
+        # 半透明の赤い四角形を描画
+        ctx.set_comp_op(CompOp.SRC_OVER)  # アルファブレンディングを有効化
+        ctx.set_fill_style_rgba(255, 0, 0, 128)  # 赤、50% 透明
+        ctx.fill_rect(50, 50, 200, 150)
 
-    # 半透明の青い四角形を重ねて描画
-    ctx.set_fill_style_rgba(0, 0, 255, 128)  # 青、50% 透明
-    ctx.fill_rect(150, 100, 200, 150)
+        # 半透明の青い四角形を重ねて描画
+        ctx.set_fill_style_rgba(0, 0, 255, 128)  # 青、50% 透明
+        ctx.fill_rect(150, 100, 200, 150)
 
-    # 半透明の緑の四角形も追加
-    ctx.set_fill_style_rgba(0, 255, 0, 128)  # 緑、50% 透明
-    ctx.fill_rect(100, 180, 200, 150)
-
-    ctx.end()
+        # 半透明の緑の四角形も追加
+        ctx.set_fill_style_rgba(0, 255, 0, 128)  # 緑、50% 透明
+        ctx.fill_rect(100, 180, 200, 150)
 
     # NumPy 配列として取得
     rgba = img.asarray()

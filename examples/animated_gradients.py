@@ -118,26 +118,24 @@ def main():
         while True:
             # 新しいフレームを作成
             img = Image(w, h)
-            ctx = Context(img)
 
-            # 背景を白で塗りつぶし
-            ctx.set_fill_style_rgba(255, 255, 255, 255)
-            ctx.fill_all()
+            with Context(img) as ctx:
+                # 背景を白で塗りつぶし
+                ctx.set_fill_style_rgba(255, 255, 255, 255)
+                ctx.fill_all()
 
-            # アルファブレンディングを有効化
-            ctx.set_comp_op(CompOp.SRC_OVER)
+                # アルファブレンディングを有効化
+                ctx.set_comp_op(CompOp.SRC_OVER)
 
-            # 各グラデーションを更新して描画
-            linear_grad.update()
-            linear_grad.draw(ctx)
+                # 各グラデーションを更新して描画
+                linear_grad.update()
+                linear_grad.draw(ctx)
 
-            radial_grad.update()
-            radial_grad.draw(ctx)
+                radial_grad.update()
+                radial_grad.draw(ctx)
 
-            conic_grad.update()
-            conic_grad.draw(ctx)
-
-            ctx.end()
+                conic_grad.update()
+                conic_grad.draw(ctx)
 
             # NumPy 配列として取得
             rgba = img.asarray()

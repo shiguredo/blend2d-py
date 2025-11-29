@@ -526,5 +526,10 @@ NB_MODULE(_blend2d, m) {
       .def("stroke_circle", &DrawContext::stroke_circle, "cx"_a, "cy"_a, "r"_a,
            nb::sig("def stroke_circle(self, cx: float, cy: float, r: float) -> None"))
       .def("stroke_path", &DrawContext::stroke_path, "path"_a,
-           nb::sig("def stroke_path(self, path: Path) -> None"));
+           nb::sig("def stroke_path(self, path: Path) -> None"))
+      .def("__enter__", [](DrawContext& self) -> DrawContext& { return self; })
+      .def(
+          "__exit__",
+          [](DrawContext& self, nb::object, nb::object, nb::object) { self.end(); },
+          "exc_type"_a.none(), "exc_val"_a.none(), "exc_tb"_a.none());
 }
