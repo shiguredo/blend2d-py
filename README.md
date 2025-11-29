@@ -136,8 +136,9 @@ with Context(img) as ctx:
 ### 複数の図形を組み合わせる例
 
 ```python
+import colorsys
 from math import pi, sin, cos
-from blend2d import Image, Context, CompOp
+from blend2d import Image, Context
 
 w, h = 640, 480
 img = Image(w, h)
@@ -159,11 +160,8 @@ with Context(img) as ctx:
 
         # 虹色のグラデーション
         hue = i / num_circles
-        r = int(255 * (1 - hue) if hue < 0.5 else 0)
-        g = int(255 * hue if hue < 0.5 else 255 * (1 - hue))
-        b = int(0 if hue < 0.5 else 255 * hue)
-
-        ctx.set_fill_style_rgba(r, g, b, 200)
+        r, g, b = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
+        ctx.set_fill_style_rgba(int(r * 255), int(g * 255), int(b * 255), 200)
         ctx.fill_circle(x, y, 20)  # 小さな円を描画
 ```
 
