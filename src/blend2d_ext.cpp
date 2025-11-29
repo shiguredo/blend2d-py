@@ -177,7 +177,14 @@ void PyPath::close() {
 }
 
 // DrawContext 実装
-DrawContext::DrawContext(PyImage& img) : ctx(img.img) {}
+DrawContext::DrawContext(PyImage& img, uint32_t thread_count) {
+  BLContextCreateInfo create_info{};
+  create_info.thread_count = thread_count;
+  BLResult r = ctx.begin(img.img, create_info);
+  if (r != BL_SUCCESS) {
+    throw std::runtime_error("BLContext.begin failed: " + std::to_string(r));
+  }
+}
 
 DrawContext::~DrawContext() {
   if (!ended)
@@ -423,8 +430,8 @@ NB_MODULE(_blend2d, m) {
           nb::sig("def extend_mode(self) -> ExtendMode"));
 
   nb::class_<DrawContext>(m, "Context")
-      .def(nb::init<PyImage&>(), "image"_a,
-           nb::sig("def __init__(self, image: Image) -> None"))
+      .def(nb::init<PyImage&, uint32_t>(), "image"_a, "thread_count"_a = 0,
+           nb::sig("def __init__(self, image: Image, thread_count: int = 0) -> None"))
       .def("end", &DrawContext::end, nb::sig("def end(self) -> None"))
       .def("save", &DrawContext::save, nb::sig("def save(self) -> None"))
       .def("restore", &DrawContext::restore,

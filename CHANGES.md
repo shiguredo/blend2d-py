@@ -11,6 +11,11 @@
 
 ## develop
 
+- [ADD] `Context` に `thread_count` 引数を追加してマルチスレッドレンダリングを可能にする
+  - `thread_count=0` (デフォルト): 同期モード (シングルスレッド)
+  - `thread_count=1`: 非同期モード (追加スレッドなし)
+  - `thread_count>1`: 非同期モード (thread_count - 1 個のワーカースレッド)
+  - @voluntas
 - [UPDATE] `PyImage::asarray()` で `nb::ndarray` を直接使用する
   - 戻り値型を `nb::object` から `nb::ndarray<nb::numpy, uint8_t>` に変更する
   - `nanobind の ndarray` を直接使用する
