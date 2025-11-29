@@ -11,6 +11,10 @@
 
 ## develop
 
+- [ADD] `Context` にコンテキストマネージャープロトコルを追加する
+  - `with Context(img) as ctx:` で使用可能
+  - `with` ブロックを抜けると自動的に `end()` が呼ばれる
+  - @voluntas
 - [ADD] `Context` に `thread_count` 引数を追加してマルチスレッドレンダリングを可能にする
   - `thread_count=0` (デフォルト): 同期モード (シングルスレッド)
   - `thread_count=1`: 非同期モード (追加スレッドなし)
