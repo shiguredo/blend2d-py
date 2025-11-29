@@ -12,7 +12,7 @@
 ## develop
 
 - [UPDATE] `PyImage::asarray()` で `nb::ndarray` を直接使用する
-  - 戻り値型を nb::object から `nb::ndarray<nb::numpy, uint8_t>` に変更する
+  - 戻り値型を `nb::object` から `nb::ndarray<nb::numpy, uint8_t>` に変更する
   - `nanobind の ndarray` を直接使用する
   - 手動の `nb::sig` を削除してスタブ自動生成に任せる
   - @voluntas
