@@ -4,6 +4,7 @@
 円を円形に配置して、虹色のグラデーションパターンを作成するサンプルです。
 """
 
+import colorsys
 from math import cos, pi, sin
 
 import cv2
@@ -32,11 +33,8 @@ def main():
 
             # 虹色のグラデーション
             hue = i / num_circles
-            r = int(255 * (1 - hue) if hue < 0.5 else 0)
-            g = int(255 * hue if hue < 0.5 else 255 * (1 - hue))
-            b = int(0 if hue < 0.5 else 255 * hue)
-
-            ctx.set_fill_style_rgba(r, g, b, 200)
+            r, g, b = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
+            ctx.set_fill_style_rgba(int(r * 255), int(g * 255), int(b * 255), 200)
             ctx.fill_circle(x, y, 20)  # 小さな円を描画
 
         # 中心にも大きな円を追加

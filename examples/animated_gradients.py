@@ -5,6 +5,7 @@
 グラデーションが回転したり色が変化するアニメーションサンプルです。
 """
 
+import colorsys
 import math
 
 import cv2
@@ -88,15 +89,11 @@ class AnimatedConicGradient:
         grad = Gradient()
         grad.create_conic(self.x, self.y, self.angle)
 
-        # 色相を変化させる
-        r1 = int(128 + 127 * math.sin(self.color_phase))
-        g1 = int(128 + 127 * math.sin(self.color_phase + 2.0))
-        b1 = int(128 + 127 * math.sin(self.color_phase + 4.0))
-
-        grad.add_stop(0.0, r1, g1, b1)
-        grad.add_stop(0.33, b1, r1, g1)
-        grad.add_stop(0.66, g1, b1, r1)
-        grad.add_stop(1.0, r1, g1, b1)
+        # 色相を変化させる (3色を120度ずつずらして配置)
+        for i, offset in enumerate([0.0, 0.33, 0.66, 1.0]):
+            hue = (self.color_phase / (2 * math.pi) + offset) % 1.0
+            r, g, b = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
+            grad.add_stop(offset, int(r * 255), int(g * 255), int(b * 255))
 
         ctx.set_fill_style_gradient(grad)
         ctx.fill_circle(self.x, self.y, self.radius)
