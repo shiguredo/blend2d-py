@@ -60,25 +60,24 @@ from blend2d import Image, Context, CompOp
 # 画像サイズを指定
 w, h = 640, 360
 img = Image(w, h)
-ctx = Context(img)
 
-# 合成モードを設定（SRC_COPY は不透明描画）
-ctx.set_comp_op(CompOp.SRC_COPY)
+with Context(img) as ctx:
+    # 合成モードを設定（SRC_COPY は不透明描画）
+    ctx.set_comp_op(CompOp.SRC_COPY)
 
-# 背景を黒で塗りつぶし
-ctx.set_fill_style_rgba(0, 0, 0, 255)
-ctx.fill_all()
+    # 背景を黒で塗りつぶし
+    ctx.set_fill_style_rgba(0, 0, 0, 255)
+    ctx.fill_all()
 
-# 中心に移動
-ctx.translate(w*0.5, h*0.5)
+    # 中心に移動
+    ctx.translate(w*0.5, h*0.5)
 
-# 白い円を描画
-ctx.set_fill_style_rgba(255, 255, 255, 255)
-ctx.fill_pie(0, 0, min(w, h)*0.3, 0, 2*pi)
+    # 白い円を描画
+    ctx.set_fill_style_rgba(255, 255, 255, 255)
+    ctx.fill_pie(0, 0, min(w, h)*0.3, 0, 2*pi)
 
-# NumPy 配列として取得（ゼロコピー）
-rgba = img.asarray()  # (H, W, 4) uint8 (BGRA)
-ctx.end()
+    # NumPy 配列として取得（ゼロコピー）
+    rgba = img.asarray()  # (H, W, 4) uint8 (BGRA)
 ```
 
 ### 四角形と透明度の例
@@ -88,22 +87,20 @@ from blend2d import Image, Context, CompOp
 
 w, h = 640, 480
 img = Image(w, h)
-ctx = Context(img)
 
-# 背景を白で塗りつぶし
-ctx.set_fill_style_rgba(255, 255, 255, 255)
-ctx.fill_all()
+with Context(img) as ctx:
+    # 背景を白で塗りつぶし
+    ctx.set_fill_style_rgba(255, 255, 255, 255)
+    ctx.fill_all()
 
-# 半透明の赤い四角形を描画
-ctx.set_comp_op(CompOp.SRC_OVER)  # アルファブレンディングを有効化
-ctx.set_fill_style_rgba(255, 0, 0, 128)  # 赤、50% 透明
-ctx.fill_rect(50, 50, 200, 150)
+    # 半透明の赤い四角形を描画
+    ctx.set_comp_op(CompOp.SRC_OVER)  # アルファブレンディングを有効化
+    ctx.set_fill_style_rgba(255, 0, 0, 128)  # 赤、50% 透明
+    ctx.fill_rect(50, 50, 200, 150)
 
-# 半透明の青い四角形を重ねて描画
-ctx.set_fill_style_rgba(0, 0, 255, 128)  # 青、50% 透明
-ctx.fill_rect(150, 100, 200, 150)
-
-ctx.end()
+    # 半透明の青い四角形を重ねて描画
+    ctx.set_fill_style_rgba(0, 0, 255, 128)  # 青、50% 透明
+    ctx.fill_rect(150, 100, 200, 150)
 ```
 
 ### パスを使った図形描画
@@ -113,11 +110,6 @@ from blend2d import Image, Context, Path, CompOp
 
 w, h = 640, 480
 img = Image(w, h)
-ctx = Context(img)
-
-# 背景を暗い灰色に
-ctx.set_fill_style_rgba(40, 40, 40, 255)
-ctx.fill_all()
 
 # パスで三角形を作成
 path = Path()
@@ -126,16 +118,19 @@ path.line_to(w/4, 3*h/4)    # 左下
 path.line_to(3*w/4, 3*h/4)  # 右下
 path.close()                # パスを閉じる
 
-# グラデーション風に複数の色で描画
-colors = [(255, 100, 100), (100, 255, 100), (100, 100, 255)]
-for i, color in enumerate(colors):
-    ctx.save()  # 現在の状態を保存
-    ctx.translate(i * 10, i * 10)  # 少しずつずらす
-    ctx.set_fill_style_rgba(*color, 200 - i * 50)  # 透明度を変える
-    ctx.fill_path(path)
-    ctx.restore()  # 状態を復元
+with Context(img) as ctx:
+    # 背景を暗い灰色に
+    ctx.set_fill_style_rgba(40, 40, 40, 255)
+    ctx.fill_all()
 
-ctx.end()
+    # グラデーション風に複数の色で描画
+    colors = [(255, 100, 100), (100, 255, 100), (100, 100, 255)]
+    for i, color in enumerate(colors):
+        ctx.save()  # 現在の状態を保存
+        ctx.translate(i * 10, i * 10)  # 少しずつずらす
+        ctx.set_fill_style_rgba(*color, 200 - i * 50)  # 透明度を変える
+        ctx.fill_path(path)
+        ctx.restore()  # 状態を復元
 ```
 
 ### 複数の図形を組み合わせる例
@@ -146,32 +141,30 @@ from blend2d import Image, Context, CompOp
 
 w, h = 640, 480
 img = Image(w, h)
-ctx = Context(img)
 
-# 背景を黒に
-ctx.set_fill_style_rgba(0, 0, 0, 255)
-ctx.fill_all()
+with Context(img) as ctx:
+    # 背景を黒に
+    ctx.set_fill_style_rgba(0, 0, 0, 255)
+    ctx.fill_all()
 
-# 円を円形に配置
-ctx.translate(w/2, h/2)  # 中心に移動
-num_circles = 12
-radius = 100
+    # 円を円形に配置
+    ctx.translate(w/2, h/2)  # 中心に移動
+    num_circles = 12
+    radius = 100
 
-for i in range(num_circles):
-    angle = 2 * pi * i / num_circles
-    x = radius * cos(angle)
-    y = radius * sin(angle)
-    
-    # 虹色のグラデーション
-    hue = i / num_circles
-    r = int(255 * (1 - hue) if hue < 0.5 else 0)
-    g = int(255 * hue if hue < 0.5 else 255 * (1 - hue))
-    b = int(0 if hue < 0.5 else 255 * hue)
-    
-    ctx.set_fill_style_rgba(r, g, b, 200)
-    ctx.fill_circle(x, y, 20)  # 小さな円を描画
+    for i in range(num_circles):
+        angle = 2 * pi * i / num_circles
+        x = radius * cos(angle)
+        y = radius * sin(angle)
 
-ctx.end()
+        # 虹色のグラデーション
+        hue = i / num_circles
+        r = int(255 * (1 - hue) if hue < 0.5 else 0)
+        g = int(255 * hue if hue < 0.5 else 255 * (1 - hue))
+        b = int(0 if hue < 0.5 else 255 * hue)
+
+        ctx.set_fill_style_rgba(r, g, b, 200)
+        ctx.fill_circle(x, y, 20)  # 小さな円を描画
 ```
 
 ### テキスト描画 (macOS のみ)
@@ -181,11 +174,6 @@ from blend2d import Image, Context, Font, FontFace
 
 w, h = 640, 480
 img = Image(w, h)
-ctx = Context(img)
-
-# 背景を白で塗りつぶし
-ctx.set_fill_style_rgba(255, 255, 255, 255)
-ctx.fill_all()
 
 # フォントをロード (macOS のシステムフォント)
 face = FontFace()
@@ -194,11 +182,14 @@ face.create_from_file("/System/Library/Fonts/Helvetica.ttc")
 # フォントインスタンスを作成
 font = Font(face, 48.0)
 
-# テキストを描画
-ctx.set_fill_style_rgba(0, 0, 0, 255)
-ctx.fill_utf8_text(50, 100, font, "Hello, Blend2D!")
+with Context(img) as ctx:
+    # 背景を白で塗りつぶし
+    ctx.set_fill_style_rgba(255, 255, 255, 255)
+    ctx.fill_all()
 
-ctx.end()
+    # テキストを描画
+    ctx.set_fill_style_rgba(0, 0, 0, 255)
+    ctx.fill_utf8_text(50, 100, font, "Hello, Blend2D!")
 ```
 
 > [!NOTE]
