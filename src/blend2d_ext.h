@@ -62,8 +62,8 @@ struct PyGradient {
   void add_stop(double offset, uint32_t r, uint32_t g, uint32_t b, uint32_t a);
   void reset_stops();
   size_t stop_count() const;
-  uint32_t gradient_type() const;
-  uint32_t extend_mode() const;
+  BLGradientType gradient_type() const;
+  BLExtendMode extend_mode() const;
 };
 
 struct PyPattern {
@@ -73,7 +73,7 @@ struct PyPattern {
   void create(PyImage& image, BLExtendMode extend_mode = BL_EXTEND_MODE_REPEAT);
   void set_area(int x, int y, int w, int h);
   void reset_area();
-  uint32_t extend_mode() const;
+  BLExtendMode extend_mode() const;
   void set_extend_mode(BLExtendMode extend_mode);
 };
 

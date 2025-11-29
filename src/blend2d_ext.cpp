@@ -119,12 +119,12 @@ size_t PyGradient::stop_count() const {
   return gradient.size();
 }
 
-uint32_t PyGradient::gradient_type() const {
-  return static_cast<uint32_t>(gradient.type());
+BLGradientType PyGradient::gradient_type() const {
+  return gradient.type();
 }
 
-uint32_t PyGradient::extend_mode() const {
-  return static_cast<uint32_t>(gradient.extend_mode());
+BLExtendMode PyGradient::extend_mode() const {
+  return gradient.extend_mode();
 }
 
 // PyPattern 実装
@@ -151,8 +151,8 @@ void PyPattern::reset_area() {
   pattern.reset_area();
 }
 
-uint32_t PyPattern::extend_mode() const {
-  return static_cast<uint32_t>(pattern.extend_mode());
+BLExtendMode PyPattern::extend_mode() const {
+  return pattern.extend_mode();
 }
 
 void PyPattern::set_extend_mode(BLExtendMode extend_mode) {
