@@ -25,23 +25,19 @@ nb::object PyImage::memoryview() {
   return nb::steal<nb::object>(mv);
 }
 
-nb::object PyImage::asarray() {
-  // 実装: memoryview -> numpy.frombuffer -> reshape / slice (ゼロコピー)
-  nb::object mv = memoryview();
-  nb::object np = nb::module_::import_("numpy");
-  nb::object uint8 = np.attr("uint8");
-  nb::object arr = np.attr("frombuffer")(mv, uint8);
-  // (H, -1)
-  arr =
-      arr.attr("reshape")(nb::make_tuple((Py_ssize_t)height, (Py_ssize_t)-1));
-  // [0:H, 0:W*4]
-  arr = arr.attr("__getitem__")(nb::make_tuple(
-      nb::slice((Py_ssize_t)0, (Py_ssize_t)height, (Py_ssize_t)1),
-      nb::slice((Py_ssize_t)0, (Py_ssize_t)width * 4, (Py_ssize_t)1)));
-  // (H, W, 4)
-  arr = arr.attr("reshape")(
-      nb::make_tuple((Py_ssize_t)height, (Py_ssize_t)width, (Py_ssize_t)4));
-  return arr;
+nb::ndarray<nb::numpy, uint8_t> PyImage::asarray() {
+  BLImageData d;
+  BLResult r = img.get_data(&d);
+  if (r != BL_SUCCESS) {
+    throw std::runtime_error("BLImage.get_data failed: " + std::to_string(r));
+  }
+  // shape: (height, width, 4)
+  size_t shape[3] = {(size_t)height, (size_t)width, 4};
+  // strides: (stride, 4, 1) バイト単位
+  int64_t strides[3] = {(int64_t)d.stride, 4, 1};
+
+  return nb::ndarray<nb::numpy, uint8_t>(d.pixel_data, 3, shape, nb::handle(),
+                                         strides);
 }
 
 // PyFontFace 実装
@@ -362,7 +358,6 @@ NB_MODULE(_blend2d, m) {
            nb::sig("def memoryview(self) -> memoryview"),
            "PEP 3118 memoryview (1D, size=stride*height)")
       .def("asarray", &PyImage::asarray,
-           nb::sig("def asarray(self) -> numpy.ndarray[numpy.uint8]"),
            "NumPy ndarray view (H, W, 4) uint8; zero-copy");
 
   nb::class_<PyPath>(m, "Path")

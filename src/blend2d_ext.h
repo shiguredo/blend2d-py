@@ -19,7 +19,7 @@ struct PyImage {
 
   PyImage(int w, int h);
   nb::object memoryview();
-  nb::object asarray();
+  nb::ndarray<nb::numpy, uint8_t> asarray();
 };
 
 struct PyPath {
