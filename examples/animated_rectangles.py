@@ -83,33 +83,31 @@ def main():
         while True:
             # 新しいフレームを作成
             img = Image(w, h)
-            ctx = Context(img)
 
-            # 背景を暗い灰色で塗りつぶし
-            ctx.set_fill_style_rgba(30, 30, 30, 255)
-            ctx.fill_all()
+            with Context(img) as ctx:
+                # 背景を暗い灰色で塗りつぶし
+                ctx.set_fill_style_rgba(30, 30, 30, 255)
+                ctx.fill_all()
 
-            # 枠線を描画
-            ctx.set_comp_op(CompOp.SRC_OVER)
-            ctx.set_fill_style_rgba(100, 100, 100, 255)
-            # 上の枠
-            ctx.fill_rect(0, 0, w, 2)
-            # 下の枠
-            ctx.fill_rect(0, h - 2, w, 2)
-            # 左の枠
-            ctx.fill_rect(0, 0, 2, h)
-            # 右の枠
-            ctx.fill_rect(w - 2, 0, 2, h)
+                # 枠線を描画
+                ctx.set_comp_op(CompOp.SRC_OVER)
+                ctx.set_fill_style_rgba(100, 100, 100, 255)
+                # 上の枠
+                ctx.fill_rect(0, 0, w, 2)
+                # 下の枠
+                ctx.fill_rect(0, h - 2, w, 2)
+                # 左の枠
+                ctx.fill_rect(0, 0, 2, h)
+                # 右の枠
+                ctx.fill_rect(w - 2, 0, 2, h)
 
-            # アルファブレンディングを有効化
-            ctx.set_comp_op(CompOp.SRC_OVER)
+                # アルファブレンディングを有効化
+                ctx.set_comp_op(CompOp.SRC_OVER)
 
-            # 各四角形を更新して描画
-            for rect in rects:
-                rect.update(w, h)
-                rect.draw(ctx)
-
-            ctx.end()
+                # 各四角形を更新して描画
+                for rect in rects:
+                    rect.update(w, h)
+                    rect.draw(ctx)
 
             # NumPy 配列として取得
             rgba = img.asarray()
