@@ -27,6 +27,12 @@ struct PyPath {
 
   void move_to(double x, double y);
   void line_to(double x, double y);
+  void quad_to(double x1, double y1, double x2, double y2);
+  void cubic_to(double x1, double y1, double x2, double y2, double x3, double y3);
+  void smooth_quad_to(double x2, double y2);
+  void smooth_cubic_to(double x2, double y2, double x3, double y3);
+  void arc_to(double cx, double cy, double rx, double ry, double start, double sweep, bool force_move_to = false);
+  void elliptic_arc_to(double rx, double ry, double x_axis_rotation, bool large_arc_flag, bool sweep_flag, double x, double y);
   void close();
 };
 

@@ -172,6 +172,30 @@ void PyPath::line_to(double x, double y) {
   path.line_to(x, y);
 }
 
+void PyPath::quad_to(double x1, double y1, double x2, double y2) {
+  path.quad_to(x1, y1, x2, y2);
+}
+
+void PyPath::cubic_to(double x1, double y1, double x2, double y2, double x3, double y3) {
+  path.cubic_to(x1, y1, x2, y2, x3, y3);
+}
+
+void PyPath::smooth_quad_to(double x2, double y2) {
+  path.smooth_quad_to(x2, y2);
+}
+
+void PyPath::smooth_cubic_to(double x2, double y2, double x3, double y3) {
+  path.smooth_cubic_to(x2, y2, x3, y3);
+}
+
+void PyPath::arc_to(double cx, double cy, double rx, double ry, double start, double sweep, bool force_move_to) {
+  path.arc_to(cx, cy, rx, ry, start, sweep, force_move_to);
+}
+
+void PyPath::elliptic_arc_to(double rx, double ry, double x_axis_rotation, bool large_arc_flag, bool sweep_flag, double x, double y) {
+  path.elliptic_arc_to(rx, ry, x_axis_rotation, large_arc_flag, sweep_flag, x, y);
+}
+
 void PyPath::close() {
   path.close();
 }
@@ -373,6 +397,18 @@ NB_MODULE(_blend2d, m) {
            nb::sig("def move_to(self, x: float, y: float) -> None"))
       .def("line_to", &PyPath::line_to, "x"_a, "y"_a,
            nb::sig("def line_to(self, x: float, y: float) -> None"))
+      .def("quad_to", &PyPath::quad_to, "x1"_a, "y1"_a, "x2"_a, "y2"_a,
+           nb::sig("def quad_to(self, x1: float, y1: float, x2: float, y2: float) -> None"))
+      .def("cubic_to", &PyPath::cubic_to, "x1"_a, "y1"_a, "x2"_a, "y2"_a, "x3"_a, "y3"_a,
+           nb::sig("def cubic_to(self, x1: float, y1: float, x2: float, y2: float, x3: float, y3: float) -> None"))
+      .def("smooth_quad_to", &PyPath::smooth_quad_to, "x2"_a, "y2"_a,
+           nb::sig("def smooth_quad_to(self, x2: float, y2: float) -> None"))
+      .def("smooth_cubic_to", &PyPath::smooth_cubic_to, "x2"_a, "y2"_a, "x3"_a, "y3"_a,
+           nb::sig("def smooth_cubic_to(self, x2: float, y2: float, x3: float, y3: float) -> None"))
+      .def("arc_to", &PyPath::arc_to, "cx"_a, "cy"_a, "rx"_a, "ry"_a, "start"_a, "sweep"_a, "force_move_to"_a = false,
+           nb::sig("def arc_to(self, cx: float, cy: float, rx: float, ry: float, start: float, sweep: float, force_move_to: bool = False) -> None"))
+      .def("elliptic_arc_to", &PyPath::elliptic_arc_to, "rx"_a, "ry"_a, "x_axis_rotation"_a, "large_arc_flag"_a, "sweep_flag"_a, "x"_a, "y"_a,
+           nb::sig("def elliptic_arc_to(self, rx: float, ry: float, x_axis_rotation: float, large_arc_flag: bool, sweep_flag: bool, x: float, y: float) -> None"))
       .def("close", &PyPath::close, nb::sig("def close(self) -> None"));
 
   nb::class_<PyFontFace>(m, "FontFace")
