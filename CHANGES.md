@@ -16,6 +16,14 @@
   - `thread_count=1`: 非同期モード (追加スレッドなし)
   - `thread_count>1`: 非同期モード (thread_count - 1 個のワーカースレッド)
   - @voluntas
+- [ADD] `Path` に曲線機能を追加する
+  - `quad_to`: 二次ベジェ曲線
+  - `cubic_to`: 三次ベジェ曲線
+  - `smooth_quad_to`: スムーズ二次ベジェ曲線
+  - `smooth_cubic_to`: スムーズ三次ベジェ曲線
+  - `arc_to`: 円弧
+  - `elliptic_arc_to`: 楕円弧
+  - @voluntas
 - [UPDATE] `PyImage::asarray()` で `nb::ndarray` を直接使用する
   - 戻り値型を `nb::object` から `nb::ndarray<nb::numpy, uint8_t>` に変更する
   - `nanobind の ndarray` を直接使用する

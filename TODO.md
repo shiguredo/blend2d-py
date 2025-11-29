@@ -13,7 +13,18 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 ## 最優先: 描画に不可欠な機能
 
 
-### 3. Matrix2D (変換行列)
+### 3. Context の変換機能 (追加)
+
+現在 translate(), rotate() のみ実装。以下を追加:
+
+- [ ] scale(x, y) / scale(xy)
+- [ ] skew(x, y)
+- [ ] reset_transform()
+- [ ] rotate_around(angle, x, y)
+- [ ] transform(matrix) - Matrix2D 適用
+- [ ] post_translate, post_scale, post_skew, post_rotate
+
+### Matrix2D (変換行列)
 
 - [ ] Matrix2D クラス
   - [ ] create (identity, translation, scaling, rotation)
@@ -23,9 +34,9 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
   - [ ] invert
   - [ ] map_point, map_vector
 - [ ] Context での Matrix 対応
-  - [ ] set_transform
-  - [ ] apply_transform
-  - [ ] reset_transform
+  - [ ] set_transform (直接設定)
+  - [ ] apply_transform (追加適用)
+  - [ ] get_transform (取得)
 
 ### 4. Stroke (線描画) - 部分実装
 
@@ -40,15 +51,15 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 
 ### 5. Path の曲線機能
 
-- [ ] ベジェ曲線
-  - [ ] quad_to (二次ベジェ)
-  - [ ] cubic_to (三次ベジェ)
-  - [ ] smooth_quad_to
-  - [ ] smooth_cubic_to
+- [x] ベジェ曲線
+  - [x] quad_to (二次ベジェ)
+  - [x] cubic_to (三次ベジェ)
+  - [x] smooth_quad_to
+  - [x] smooth_cubic_to
   - [ ] conic_to (円錐曲線)
-- [ ] 円弧
-  - [ ] arc_to
-  - [ ] elliptic_arc_to
+- [x] 円弧
+  - [x] arc_to
+  - [x] elliptic_arc_to
   - [ ] arc_quadrant_to
 - [ ] ジオメトリ追加
   - [ ] add_rect, add_box
@@ -145,7 +156,10 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 ### 14. Context の高度な機能
 
 - [ ] fill_geometry (汎用ジオメトリ)
+- [ ] stroke_geometry (汎用ジオメトリ)
 - [ ] set_fill_rule (NON_ZERO, EVEN_ODD)
+- [ ] set_fill_alpha
+- [ ] set_stroke_alpha
 - [ ] set_global_alpha
 - [ ] flush
 - [ ] Context Hints
@@ -206,7 +220,7 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 
 ### Context (基本描画)
 
-- [x] 初期化 (Image から)
+- [x] 初期化 (Image から, thread_count オプション)
 - [x] end(), save(), restore()
 - [x] set_comp_op() (SRC_COPY, SRC_OVER)
 - [x] set_fill_style_rgba()
@@ -222,6 +236,12 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 
 - [x] move_to()
 - [x] line_to()
+- [x] quad_to() (二次ベジェ曲線)
+- [x] cubic_to() (三次ベジェ曲線)
+- [x] smooth_quad_to()
+- [x] smooth_cubic_to()
+- [x] arc_to() (円弧)
+- [x] elliptic_arc_to() (楕円弧)
 - [x] close()
 
 ### Font 関連
