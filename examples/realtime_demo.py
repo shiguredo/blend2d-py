@@ -158,46 +158,45 @@ def main(width: int = 640, height: int = 360, fps: int = 60):
     try:
         while True:
             now = time.perf_counter()
+
             # 1フレーム描画
-            ctx = Context(img)
-            ctx.set_comp_op(CompOp.SRC_COPY)
-            ctx.set_fill_style_rgba(0, 0, 0, 255)
-            ctx.fill_all()
+            with Context(img) as ctx:
+                ctx.set_comp_op(CompOp.SRC_COPY)
+                ctx.set_fill_style_rgba(0, 0, 0, 255)
+                ctx.fill_all()
 
-            # デジタル時計
-            ctx.save()
-            draw_digital_clock(ctx, start, width, height)
-            ctx.restore()
+                # デジタル時計
+                ctx.save()
+                draw_digital_clock(ctx, start, width, height)
+                ctx.restore()
 
-            # 回転する円弧
-            ctx.save()
-            ctx.translate(width * 0.5, height * 0.5)
-            ctx.rotate(-pi / 2)
-            ctx.set_fill_style_rgba(255, 255, 255)
-            ctx.fill_pie(0, 0, min(width, height) * 0.3, 0, 2 * pi)
-            ctx.set_fill_style_rgba(160, 160, 160)
-            sweep = (frame % fps) / float(fps) * 2 * pi
-            ctx.fill_pie(0, 0, min(width, height) * 0.3, 0, sweep)
-            ctx.restore()
+                # 回転する円弧
+                ctx.save()
+                ctx.translate(width * 0.5, height * 0.5)
+                ctx.rotate(-pi / 2)
+                ctx.set_fill_style_rgba(255, 255, 255)
+                ctx.fill_pie(0, 0, min(width, height) * 0.3, 0, 2 * pi)
+                ctx.set_fill_style_rgba(160, 160, 160)
+                sweep = (frame % fps) / float(fps) * 2 * pi
+                ctx.fill_pie(0, 0, min(width, height) * 0.3, 0, sweep)
+                ctx.restore()
 
-            # 横に流れるボックス
-            box = 50
-            colors = [
-                (255, 0, 0),
-                (0, 255, 0),
-                (0, 0, 255),
-                (255, 255, 0),
-                (255, 0, 255),
-            ]
-            for i in range(5):
-                phase = (frame + i * 20) % 100 / 100.0
-                x = phase * (width - box)
-                y = height * 0.5 + sin(phase * 2 * pi) * height * 0.2
-                r, g, b = colors[i % len(colors)]
-                ctx.set_fill_style_rgba(r, g, b)
-                ctx.fill_rect(x, y, box, box)
-
-            ctx.end()
+                # 横に流れるボックス
+                box = 50
+                colors = [
+                    (255, 0, 0),
+                    (0, 255, 0),
+                    (0, 0, 255),
+                    (255, 255, 0),
+                    (255, 0, 255),
+                ]
+                for i in range(5):
+                    phase = (frame + i * 20) % 100 / 100.0
+                    x = phase * (width - box)
+                    y = height * 0.5 + sin(phase * 2 * pi) * height * 0.2
+                    r, g, b = colors[i % len(colors)]
+                    ctx.set_fill_style_rgba(r, g, b)
+                    ctx.fill_rect(x, y, box, box)
 
             # 表示 (PRGB32 ~ BGRA を BGR に変換)
             rgba = img.asarray()

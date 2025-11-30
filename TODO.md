@@ -1,31 +1,33 @@
 # blend2d-py TODO リスト
 
-blend2d の Python バインディングで未実装の機能を優先度順に整理。
+blend2d 0.21.2 の Python バインディングで未実装の機能を優先度順に整理。
 
 ## 凡例
 
 - [ ] 未実装
 - [x] 実装済み
-- [~] 実装中
+
+---
+
+## 対応しない機能
+
+### Matrix2D (変換行列)
+
+対応しない。Python では NumPy の ndarray を利用する。
+
+### Random (乱数)
+
+対応しない。Python では NumPy の numpy.random を利用する。
+numpy.random はベクトル化されており、1回の呼び出しで大量の乱数を生成できるため高速。
+
+### Image I/O (画像読み書き)
+
+対応しない。OpenCV や Pillow を利用する。
+blend2d は PNG/JPEG/BMP の内蔵コーデックを持つが、OpenCV の libjpeg-turbo の方が高速。
 
 ---
 
 ## 最優先: 描画に不可欠な機能
-
-
-### 3. Matrix2D (変換行列)
-
-- [ ] Matrix2D クラス
-  - [ ] create (identity, translation, scaling, rotation)
-  - [ ] reset, reset_to_xxx
-  - [ ] translate, scale, rotate, skew
-  - [ ] transform (matrix 適用)
-  - [ ] invert
-  - [ ] map_point, map_vector
-- [ ] Context での Matrix 対応
-  - [ ] set_transform
-  - [ ] apply_transform
-  - [ ] reset_transform
 
 ### 4. Stroke (線描画) - 部分実装
 
@@ -40,15 +42,15 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 
 ### 5. Path の曲線機能
 
-- [ ] ベジェ曲線
-  - [ ] quad_to (二次ベジェ)
-  - [ ] cubic_to (三次ベジェ)
-  - [ ] smooth_quad_to
-  - [ ] smooth_cubic_to
+- [x] ベジェ曲線
+  - [x] quad_to (二次ベジェ)
+  - [x] cubic_to (三次ベジェ)
+  - [x] smooth_quad_to
+  - [x] smooth_cubic_to
   - [ ] conic_to (円錐曲線)
-- [ ] 円弧
-  - [ ] arc_to
-  - [ ] elliptic_arc_to
+- [x] 円弧
+  - [x] arc_to
+  - [x] elliptic_arc_to
   - [ ] arc_quadrant_to
 - [ ] ジオメトリ追加
   - [ ] add_rect, add_box
@@ -79,18 +81,7 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 
 ## 高優先度: 実用的な描画に必要
 
-### 8. Image I/O
-
-- [ ] read_from_file
-  - [ ] 基本的な読み込み
-  - [ ] codec 指定
-- [ ] write_to_file
-  - [ ] 基本的な書き込み
-  - [ ] codec 指定
-- [ ] read_from_data (メモリバッファ)
-- [ ] write_to_data (メモリバッファ)
-
-### 9. Image の変換機能
+### 8. Image の変換機能
 
 - [ ] scale
   - [ ] NEAREST フィルタ
@@ -145,7 +136,10 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 ### 14. Context の高度な機能
 
 - [ ] fill_geometry (汎用ジオメトリ)
+- [ ] stroke_geometry (汎用ジオメトリ)
 - [ ] set_fill_rule (NON_ZERO, EVEN_ODD)
+- [ ] set_fill_alpha
+- [ ] set_stroke_alpha
 - [ ] set_global_alpha
 - [ ] flush
 - [ ] Context Hints
@@ -157,17 +151,7 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 
 ## 中優先度: 特定用途で必要
 
-### 15. ImageCodec 関連
-
-- [ ] ImageCodec クラス
-  - [ ] built_in_codecs
-  - [ ] find_by_name
-  - [ ] find_by_extension
-  - [ ] find_by_data
-- [ ] ImageDecoder クラス
-- [ ] ImageEncoder クラス
-
-### 16. Font の高度な機能
+### 15. Font の高度な機能
 
 - [ ] FontManager
   - [ ] create
@@ -190,7 +174,6 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 - [ ] BitArray
 - [ ] BitSet
 - [ ] PixelConverter
-- [ ] Random
 - [ ] Runtime, RuntimeScope
 
 ---
@@ -206,7 +189,7 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 
 ### Context (基本描画)
 
-- [x] 初期化 (Image から)
+- [x] 初期化 (Image から, thread_count オプション)
 - [x] end(), save(), restore()
 - [x] set_comp_op() (SRC_COPY, SRC_OVER)
 - [x] set_fill_style_rgba()
@@ -222,6 +205,12 @@ blend2d の Python バインディングで未実装の機能を優先度順に�
 
 - [x] move_to()
 - [x] line_to()
+- [x] quad_to() (二次ベジェ曲線)
+- [x] cubic_to() (三次ベジェ曲線)
+- [x] smooth_quad_to()
+- [x] smooth_cubic_to()
+- [x] arc_to() (円弧)
+- [x] elliptic_arc_to() (楕円弧)
 - [x] close()
 
 ### Font 関連

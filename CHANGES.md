@@ -11,6 +11,36 @@
 
 ## develop
 
+## 2025.4.0
+
+**リリース日**:: 2025-11-30
+
+- [UPDATE] `Gradient.gradient_type` / `Gradient.extend_mode` / `Pattern.extend_mode` の戻り値型を変更する
+  - `int` から enum 型 (`GradientType` / `ExtendMode`) に変更
+  - @voluntas
+- [ADD] `Context` にコンテキストマネージャープロトコルを追加する
+  - `with Context(img) as ctx:` で使用可能
+  - `with` ブロックを抜けると自動的に `end()` が呼ばれる
+  - @voluntas
+- [ADD] `Context` に `thread_count` 引数を追加してマルチスレッドレンダリングを可能にする
+  - `thread_count=0` (デフォルト): 同期モード (シングルスレッド)
+  - `thread_count=1`: 非同期モード (追加スレッドなし)
+  - `thread_count>1`: 非同期モード (thread_count - 1 個のワーカースレッド)
+  - @voluntas
+- [ADD] `Path` に曲線機能を追加する
+  - `quad_to`: 二次ベジェ曲線
+  - `cubic_to`: 三次ベジェ曲線
+  - `smooth_quad_to`: スムーズ二次ベジェ曲線
+  - `smooth_cubic_to`: スムーズ三次ベジェ曲線
+  - `arc_to`: 円弧
+  - `elliptic_arc_to`: 楕円弧
+  - @voluntas
+- [UPDATE] `PyImage::asarray()` で `nb::ndarray` を直接使用する
+  - 戻り値型を `nb::object` から `nb::ndarray<nb::numpy, uint8_t>` に変更する
+  - `nanobind の ndarray` を直接使用する
+  - 手動の `nb::sig` を削除してスタブ自動生成に任せる
+  - @voluntas
+
 ## 2025.3.0
 
 **リリース日**:: 2025-11-25

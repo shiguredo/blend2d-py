@@ -176,26 +176,27 @@ def main(width=1280, height=720, fps=60, num_shapes=20):
 
     print("Ctrl-C または 'q' キーで終了します...")
 
-    # Image と Context を1回だけ作成（性能改善）
+    # Image を1回だけ作成（性能改善）
     img = Image(width, height)
-    ctx = Context(img)
 
     frame_num = 0
     try:
         while True:
-            # 背景を黒で塗りつぶし（Image を再利用）
-            ctx.set_comp_op(CompOp.SRC_COPY)
-            ctx.set_fill_style_rgba(0, 0, 0, 255)
-            ctx.fill_all()
+            # 1フレーム描画
+            with Context(img) as ctx:
+                # 背景を黒で塗りつぶし（Image を再利用）
+                ctx.set_comp_op(CompOp.SRC_COPY)
+                ctx.set_fill_style_rgba(0, 0, 0, 255)
+                ctx.fill_all()
 
-            # アルファブレンディングを有効化
-            ctx.set_comp_op(CompOp.SRC_OVER)
+                # アルファブレンディングを有効化
+                ctx.set_comp_op(CompOp.SRC_OVER)
 
-            # 各図形を更新して描画
-            for shape in shapes:
-                shape.update(width, height, frame_num)
-                shape.check_bounds(width, height)
-                shape.draw(ctx)
+                # 各図形を更新して描画
+                for shape in shapes:
+                    shape.update(width, height, frame_num)
+                    shape.check_bounds(width, height)
+                    shape.draw(ctx)
 
             # NumPy 配列として取得
             rgba = img.asarray()
@@ -216,7 +217,6 @@ def main(width=1280, height=720, fps=60, num_shapes=20):
     except KeyboardInterrupt:
         print("\n終了します...")
     finally:
-        ctx.end()
         cv2.destroyAllWindows()
 
 

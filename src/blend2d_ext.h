@@ -19,7 +19,7 @@ struct PyImage {
 
   PyImage(int w, int h);
   nb::object memoryview();
-  nb::object asarray();
+  nb::ndarray<nb::numpy, uint8_t> asarray();
 };
 
 struct PyPath {
@@ -27,6 +27,12 @@ struct PyPath {
 
   void move_to(double x, double y);
   void line_to(double x, double y);
+  void quad_to(double x1, double y1, double x2, double y2);
+  void cubic_to(double x1, double y1, double x2, double y2, double x3, double y3);
+  void smooth_quad_to(double x2, double y2);
+  void smooth_cubic_to(double x2, double y2, double x3, double y3);
+  void arc_to(double cx, double cy, double rx, double ry, double start, double sweep, bool force_move_to = false);
+  void elliptic_arc_to(double rx, double ry, double x_axis_rotation, bool large_arc_flag, bool sweep_flag, double x, double y);
   void close();
 };
 
@@ -56,8 +62,8 @@ struct PyGradient {
   void add_stop(double offset, uint32_t r, uint32_t g, uint32_t b, uint32_t a);
   void reset_stops();
   size_t stop_count() const;
-  uint32_t gradient_type() const;
-  uint32_t extend_mode() const;
+  BLGradientType gradient_type() const;
+  BLExtendMode extend_mode() const;
 };
 
 struct PyPattern {
@@ -67,7 +73,7 @@ struct PyPattern {
   void create(PyImage& image, BLExtendMode extend_mode = BL_EXTEND_MODE_REPEAT);
   void set_area(int x, int y, int w, int h);
   void reset_area();
-  uint32_t extend_mode() const;
+  BLExtendMode extend_mode() const;
   void set_extend_mode(BLExtendMode extend_mode);
 };
 
@@ -75,7 +81,7 @@ struct DrawContext {
   BLContext ctx;
   bool ended = false;
 
-  DrawContext(PyImage& img);
+  DrawContext(PyImage& img, uint32_t thread_count = 0);
   ~DrawContext();
 
   void end();

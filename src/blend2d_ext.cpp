@@ -25,23 +25,19 @@ nb::object PyImage::memoryview() {
   return nb::steal<nb::object>(mv);
 }
 
-nb::object PyImage::asarray() {
-  // 実装: memoryview -> numpy.frombuffer -> reshape / slice (ゼロコピー)
-  nb::object mv = memoryview();
-  nb::object np = nb::module_::import_("numpy");
-  nb::object uint8 = np.attr("uint8");
-  nb::object arr = np.attr("frombuffer")(mv, uint8);
-  // (H, -1)
-  arr =
-      arr.attr("reshape")(nb::make_tuple((Py_ssize_t)height, (Py_ssize_t)-1));
-  // [0:H, 0:W*4]
-  arr = arr.attr("__getitem__")(nb::make_tuple(
-      nb::slice((Py_ssize_t)0, (Py_ssize_t)height, (Py_ssize_t)1),
-      nb::slice((Py_ssize_t)0, (Py_ssize_t)width * 4, (Py_ssize_t)1)));
-  // (H, W, 4)
-  arr = arr.attr("reshape")(
-      nb::make_tuple((Py_ssize_t)height, (Py_ssize_t)width, (Py_ssize_t)4));
-  return arr;
+nb::ndarray<nb::numpy, uint8_t> PyImage::asarray() {
+  BLImageData d;
+  BLResult r = img.get_data(&d);
+  if (r != BL_SUCCESS) {
+    throw std::runtime_error("BLImage.get_data failed: " + std::to_string(r));
+  }
+  // shape: (height, width, 4)
+  size_t shape[3] = {(size_t)height, (size_t)width, 4};
+  // strides: (stride, 4, 1) バイト単位
+  int64_t strides[3] = {(int64_t)d.stride, 4, 1};
+
+  return nb::ndarray<nb::numpy, uint8_t>(d.pixel_data, 3, shape, nb::handle(),
+                                         strides);
 }
 
 // PyFontFace 実装
@@ -123,12 +119,12 @@ size_t PyGradient::stop_count() const {
   return gradient.size();
 }
 
-uint32_t PyGradient::gradient_type() const {
-  return static_cast<uint32_t>(gradient.type());
+BLGradientType PyGradient::gradient_type() const {
+  return gradient.type();
 }
 
-uint32_t PyGradient::extend_mode() const {
-  return static_cast<uint32_t>(gradient.extend_mode());
+BLExtendMode PyGradient::extend_mode() const {
+  return gradient.extend_mode();
 }
 
 // PyPattern 実装
@@ -155,8 +151,8 @@ void PyPattern::reset_area() {
   pattern.reset_area();
 }
 
-uint32_t PyPattern::extend_mode() const {
-  return static_cast<uint32_t>(pattern.extend_mode());
+BLExtendMode PyPattern::extend_mode() const {
+  return pattern.extend_mode();
 }
 
 void PyPattern::set_extend_mode(BLExtendMode extend_mode) {
@@ -176,12 +172,43 @@ void PyPath::line_to(double x, double y) {
   path.line_to(x, y);
 }
 
+void PyPath::quad_to(double x1, double y1, double x2, double y2) {
+  path.quad_to(x1, y1, x2, y2);
+}
+
+void PyPath::cubic_to(double x1, double y1, double x2, double y2, double x3, double y3) {
+  path.cubic_to(x1, y1, x2, y2, x3, y3);
+}
+
+void PyPath::smooth_quad_to(double x2, double y2) {
+  path.smooth_quad_to(x2, y2);
+}
+
+void PyPath::smooth_cubic_to(double x2, double y2, double x3, double y3) {
+  path.smooth_cubic_to(x2, y2, x3, y3);
+}
+
+void PyPath::arc_to(double cx, double cy, double rx, double ry, double start, double sweep, bool force_move_to) {
+  path.arc_to(cx, cy, rx, ry, start, sweep, force_move_to);
+}
+
+void PyPath::elliptic_arc_to(double rx, double ry, double x_axis_rotation, bool large_arc_flag, bool sweep_flag, double x, double y) {
+  path.elliptic_arc_to(rx, ry, x_axis_rotation, large_arc_flag, sweep_flag, x, y);
+}
+
 void PyPath::close() {
   path.close();
 }
 
 // DrawContext 実装
-DrawContext::DrawContext(PyImage& img) : ctx(img.img) {}
+DrawContext::DrawContext(PyImage& img, uint32_t thread_count) {
+  BLContextCreateInfo create_info{};
+  create_info.thread_count = thread_count;
+  BLResult r = ctx.begin(img.img, create_info);
+  if (r != BL_SUCCESS) {
+    throw std::runtime_error("BLContext.begin failed: " + std::to_string(r));
+  }
+}
 
 DrawContext::~DrawContext() {
   if (!ended)
@@ -362,7 +389,6 @@ NB_MODULE(_blend2d, m) {
            nb::sig("def memoryview(self) -> memoryview"),
            "PEP 3118 memoryview (1D, size=stride*height)")
       .def("asarray", &PyImage::asarray,
-           nb::sig("def asarray(self) -> numpy.ndarray[numpy.uint8]"),
            "NumPy ndarray view (H, W, 4) uint8; zero-copy");
 
   nb::class_<PyPath>(m, "Path")
@@ -371,6 +397,18 @@ NB_MODULE(_blend2d, m) {
            nb::sig("def move_to(self, x: float, y: float) -> None"))
       .def("line_to", &PyPath::line_to, "x"_a, "y"_a,
            nb::sig("def line_to(self, x: float, y: float) -> None"))
+      .def("quad_to", &PyPath::quad_to, "x1"_a, "y1"_a, "x2"_a, "y2"_a,
+           nb::sig("def quad_to(self, x1: float, y1: float, x2: float, y2: float) -> None"))
+      .def("cubic_to", &PyPath::cubic_to, "x1"_a, "y1"_a, "x2"_a, "y2"_a, "x3"_a, "y3"_a,
+           nb::sig("def cubic_to(self, x1: float, y1: float, x2: float, y2: float, x3: float, y3: float) -> None"))
+      .def("smooth_quad_to", &PyPath::smooth_quad_to, "x2"_a, "y2"_a,
+           nb::sig("def smooth_quad_to(self, x2: float, y2: float) -> None"))
+      .def("smooth_cubic_to", &PyPath::smooth_cubic_to, "x2"_a, "y2"_a, "x3"_a, "y3"_a,
+           nb::sig("def smooth_cubic_to(self, x2: float, y2: float, x3: float, y3: float) -> None"))
+      .def("arc_to", &PyPath::arc_to, "cx"_a, "cy"_a, "rx"_a, "ry"_a, "start"_a, "sweep"_a, "force_move_to"_a = false,
+           nb::sig("def arc_to(self, cx: float, cy: float, rx: float, ry: float, start: float, sweep: float, force_move_to: bool = False) -> None"))
+      .def("elliptic_arc_to", &PyPath::elliptic_arc_to, "rx"_a, "ry"_a, "x_axis_rotation"_a, "large_arc_flag"_a, "sweep_flag"_a, "x"_a, "y"_a,
+           nb::sig("def elliptic_arc_to(self, rx: float, ry: float, x_axis_rotation: float, large_arc_flag: bool, sweep_flag: bool, x: float, y: float) -> None"))
       .def("close", &PyPath::close, nb::sig("def close(self) -> None"));
 
   nb::class_<PyFontFace>(m, "FontFace")
@@ -428,8 +466,8 @@ NB_MODULE(_blend2d, m) {
           nb::sig("def extend_mode(self) -> ExtendMode"));
 
   nb::class_<DrawContext>(m, "Context")
-      .def(nb::init<PyImage&>(), "image"_a,
-           nb::sig("def __init__(self, image: Image) -> None"))
+      .def(nb::init<PyImage&, uint32_t>(), "image"_a, "thread_count"_a = 0,
+           nb::sig("def __init__(self, image: Image, thread_count: int = 0) -> None"))
       .def("end", &DrawContext::end, nb::sig("def end(self) -> None"))
       .def("save", &DrawContext::save, nb::sig("def save(self) -> None"))
       .def("restore", &DrawContext::restore,
@@ -488,5 +526,10 @@ NB_MODULE(_blend2d, m) {
       .def("stroke_circle", &DrawContext::stroke_circle, "cx"_a, "cy"_a, "r"_a,
            nb::sig("def stroke_circle(self, cx: float, cy: float, r: float) -> None"))
       .def("stroke_path", &DrawContext::stroke_path, "path"_a,
-           nb::sig("def stroke_path(self, path: Path) -> None"));
+           nb::sig("def stroke_path(self, path: Path) -> None"))
+      .def("__enter__", [](DrawContext& self) -> DrawContext& { return self; })
+      .def(
+          "__exit__",
+          [](DrawContext& self, nb::object, nb::object, nb::object) { self.end(); },
+          "exc_type"_a.none(), "exc_val"_a.none(), "exc_tb"_a.none());
 }
