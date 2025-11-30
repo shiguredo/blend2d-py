@@ -11,6 +11,10 @@
 
 ## develop
 
+## 2025.4.0
+
+**リリース日**:: 2025-11-30
+
 - [UPDATE] `Gradient.gradient_type` / `Gradient.extend_mode` / `Pattern.extend_mode` の戻り値型を変更する
   - `int` から enum 型 (`GradientType` / `ExtendMode`) に変更
   - @voluntas
