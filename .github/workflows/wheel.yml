@@ -23,9 +23,11 @@ jobs:
           - name: macos-14_arm64
             runs_on: macos-14
         python_version:
-          - "3.12"
-          - "3.13"
+          - "3.14t"
           - "3.14"
+          - "3.13t"
+          - "3.13"
+          - "3.12"
     runs-on: ${{ matrix.platform.runs_on }}
     timeout-minutes: 20
     steps:
@@ -57,9 +59,11 @@ jobs:
           - name: ubuntu-22.04_arm64
             runs_on: ubuntu-22.04-arm
         python_version:
-          - "3.12"
-          - "3.13"
+          - "3.14t"
           - "3.14"
+          - "3.13t"
+          - "3.13"
+          - "3.12"
     runs-on: ${{ matrix.platform.runs_on }}
     timeout-minutes: 15
     steps:
@@ -89,9 +93,11 @@ jobs:
           - name: windows-2025_x86_64
             runs_on: windows-2025
         python_version:
-          - "3.12"
-          - "3.13"
+          - "3.14t"
           - "3.14"
+          - "3.13t"
+          - "3.13"
+          - "3.12"
     runs-on: ${{ matrix.platform.runs_on }}
     timeout-minutes: 30
     steps:
@@ -130,9 +136,11 @@ jobs:
           - name: macos-14_arm64
           - name: windows-2025_x86_64
         python_version:
-          - "3.12"
-          - "3.13"
+          - "3.14t"
           - "3.14"
+          - "3.13t"
+          - "3.13"
+          - "3.12"
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     environment: pypi
