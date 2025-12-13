@@ -14,4 +14,4 @@ _deps/
 _build/
 
 # Generated stub files
-src/blend2d/blend2d.pyi
+src/blend2d/_blend2d.pyi

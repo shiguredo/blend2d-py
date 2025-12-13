@@ -133,7 +133,7 @@ set_target_properties(_blend2d PROPERTIES OUTPUT_NAME "_blend2d")
 nanobind_add_stub(
   blend2d_stub
   MODULE _blend2d
-  OUTPUT blend2d.pyi
+  OUTPUT _blend2d.pyi
   PYTHON_PATH $<TARGET_FILE_DIR:_blend2d>
   DEPENDS _blend2d
   MARKER_FILE py.typed
@@ -147,5 +147,5 @@ install(TARGETS _blend2d
 )
 
 # 型スタブファイルとマーカーファイルをインストール
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/blend2d.pyi DESTINATION ${PY_PACKAGE})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_blend2d.pyi DESTINATION ${PY_PACKAGE})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/py.typed DESTINATION ${PY_PACKAGE})
