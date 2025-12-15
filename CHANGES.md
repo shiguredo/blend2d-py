@@ -11,6 +11,16 @@
 
 ## develop
 
+- [ADD] Python 3.13t / 3.14t (Free Threading) に対応する
+  - @voluntas
+
+### misc
+
+- [CHANGE] モジュール名を `blend2d_ext` に変更する
+  - @voluntas
+- [UPDATE] `cmake` の最小バージョンを 4.2 に上げる
+  - @voluntas
+
 ## 2025.4.0
 
 **リリース日**:: 2025-11-30
