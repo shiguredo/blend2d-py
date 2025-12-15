@@ -20,7 +20,7 @@ Please read <https://github.com/shiguredo/oss/blob/master/README.en.md> before u
 
 高性能 2D ベクターグラフィックエンジン [Blend2D](https://blend2d.com/) の Python バインディングです。
 
-[![Image from Gyazo](https://i.gyazo.com/87e61ff612c80c08e36380847b553196.gif)](https://gyazo.com/87e61ff612c80c08e36380847b553196)
+https://github.com/user-attachments/assets/66d5d1ff-5ef8-4d56-a8cf-9b2f4e8c9b4b
 
 120 fps での映像なども描画可能です。
 
