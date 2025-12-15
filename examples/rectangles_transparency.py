@@ -4,9 +4,8 @@
 半透明の四角形を重ねて描画し、アルファブレンディングの効果を示すサンプルです。
 """
 
-import cv2
-
 from blend2d import CompOp, Context, Image
+from raw_player import VideoPlayer
 
 
 def main():
@@ -32,22 +31,30 @@ def main():
         ctx.fill_rect(100, 180, 200, 150)
 
     # NumPy 配列として取得
-    rgba = img.asarray()
+    bgra = img.asarray()
 
-    # OpenCV で表示（BGRA → BGR 変換）
-    bgr = cv2.cvtColor(rgba, cv2.COLOR_BGRA2BGR)
-    cv2.imshow("Rectangles with Transparency", bgr)
+    # raw-player で表示
+    player = VideoPlayer(width=w, height=h, title="Rectangles with Transparency")
+    player.enqueue_video_bgra(bgra, 0)
 
-    print("Ctrl-C で終了します...")
+    # キーコールバックを設定（ESC または q で終了）
+    def on_key(key: int) -> bool:
+        if key == 27 or key == 113:  # ESC or 'q'
+            return False
+        return True
+
+    player.set_key_callback(on_key)
+    player.play()
+
+    print("ESC または q キーで終了します...")
     print("半透明の四角形が重なっている部分の色の混合を確認できます")
 
-    try:
-        while True:
-            cv2.waitKey(1)
-    except KeyboardInterrupt:
-        print("\n終了します...")
-    finally:
-        cv2.destroyAllWindows()
+    while player.is_open:
+        if not player.poll_events():
+            break
+
+    player.close()
+    print("終了します...")
 
 
 if __name__ == "__main__":

@@ -9,11 +9,12 @@
 """
 
 import random
+import time
 
-import cv2
 import numpy as np
 
 from blend2d import CompOp, Context, Image
+from raw_player import VideoPlayer
 
 
 class MovingShape:
@@ -174,14 +175,41 @@ def main(width=1280, height=720, fps=60, num_shapes=20):
     # ノイズパターンを事前生成（性能改善）
     noise_cache = generate_noise_cache(width, height, num_patterns=10, noise_intensity=40)
 
-    print("Ctrl-C または 'q' キーで終了します...")
+    # raw-player を初期化
+    player = VideoPlayer(width=width, height=height, title="Codec Test Animation")
+
+    # キーコールバックを設定（ESC または q で終了）
+    def on_key(key: int) -> bool:
+        if key == 27 or key == 113:  # ESC or 'q'
+            return False
+        return True
+
+    player.set_key_callback(on_key)
+    player.play()
+
+    print("ESC または q キーで終了します...")
 
     # Image を1回だけ作成（性能改善）
     img = Image(width, height)
 
+    # フレーム生成のペーシング用
+    frame_interval = 1.0 / fps
+    next_frame_time = time.perf_counter()
+
     frame_num = 0
     try:
-        while True:
+        while player.is_open:
+            if not player.poll_events():
+                break
+
+            # 次のフレーム時刻まで待機
+            now = time.perf_counter()
+            if now < next_frame_time:
+                time.sleep(max(0, next_frame_time - now))
+
+            # 次のフレーム時刻を更新
+            next_frame_time += frame_interval
+
             # 1フレーム描画
             with Context(img) as ctx:
                 # 背景を黒で塗りつぶし（Image を再利用）
@@ -199,25 +227,22 @@ def main(width=1280, height=720, fps=60, num_shapes=20):
                     shape.draw(ctx)
 
             # NumPy 配列として取得
-            rgba = img.asarray()
+            bgra = img.asarray()
 
             # キャッシュされたノイズを適用（高速）
-            rgba = add_noise_cached(rgba, noise_cache, frame_num)
+            bgra = add_noise_cached(bgra, noise_cache, frame_num)
 
-            # OpenCV で表示（BGRA → BGR 変換）
-            bgr = cv2.cvtColor(rgba, cv2.COLOR_BGRA2BGR)
-            cv2.imshow("Codec Test Animation", bgr)
-
-            # フレームレート調整
-            if cv2.waitKey(int(1000 / fps)) & 0xFF == ord("q"):
-                break
+            # raw-player で表示
+            pts_us = int(frame_num * 1_000_000 / fps)
+            player.enqueue_video_bgra(bgra, pts_us)
 
             frame_num += 1
 
     except KeyboardInterrupt:
-        print("\n終了します...")
-    finally:
-        cv2.destroyAllWindows()
+        pass
+
+    player.close()
+    print("終了します...")
 
 
 if __name__ == "__main__":

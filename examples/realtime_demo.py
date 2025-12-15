@@ -1,16 +1,16 @@
 """
 リアルタイム描画デモ
 
-Blend2D でリアルタイムに図形とテキストを描画し、OpenCV で表示するサンプルです。
+Blend2D でリアルタイムに図形とテキストを描画し、raw-player で表示するサンプルです。
 7 セグメント風のデジタル時計、回転する円弧、横に流れるカラーボックスを描画します。
 """
 
+import argparse
 import time
 from math import pi, sin
 
-import cv2
-
 from blend2d import CompOp, Context, Image, Path
+from raw_player import VideoPlayer
 
 
 def draw_7segment(ctx: Context, digit: int, x: float, y: float, w: float, h: float) -> None:
@@ -147,17 +147,79 @@ def draw_digital_clock(ctx: Context, start_time: float, width: int, height: int)
     draw_7segment(ctx, milliseconds % 10, x, clock_y + y_off, ms_w, ms_h)
 
 
-def main(width: int = 640, height: int = 360, fps: int = 60):
+def main():
+    parser = argparse.ArgumentParser(description="Blend2D リアルタイム描画デモ")
+    parser.add_argument(
+        "--duration",
+        type=float,
+        default=0.0,
+        help="再生時間(秒)。0 で無制限。デフォルト: 0",
+    )
+    parser.add_argument(
+        "--fps",
+        type=int,
+        default=60,
+        help="フレームレート。デフォルト: 60",
+    )
+    parser.add_argument(
+        "--resolution",
+        type=str,
+        default="640x360",
+        help="解像度 (WIDTHxHEIGHT)。デフォルト: 640x360",
+    )
+    args = parser.parse_args()
+
+    # 解像度をパース
+    try:
+        width, height = map(int, args.resolution.split("x"))
+        if width <= 0 or height <= 0:
+            raise ValueError
+    except ValueError:
+        print(f"エラー: 無効な解像度形式: {args.resolution}")
+        return
+
+    fps = args.fps
+    total_frames = int(args.duration * fps) if args.duration > 0 else 0
+
     img = Image(width, height)
     start = time.perf_counter()
     frame = 0
-    win = "blend2d"
-    cv2.namedWindow(win, cv2.WINDOW_AUTOSIZE)
 
-    print("Ctrl-C で終了します...")
+    # raw-player を初期化
+    player = VideoPlayer(width=width, height=height, title="Blend2D Realtime Demo")
+
+    # キーコールバックを設定（ESC または q で終了）
+    def on_key(key: int) -> bool:
+        if key == 27 or key == 113:  # ESC or 'q'
+            return False
+        return True
+
+    player.set_key_callback(on_key)
+    player.play()
+
+    if total_frames > 0:
+        print(f"Duration: {args.duration}s ({total_frames} frames)")
+    print("ESC または q キーで終了します...")
+
+    # フレーム生成のペーシング用
+    frame_interval = 1.0 / fps
+    next_frame_time = time.perf_counter()
+
     try:
-        while True:
+        while player.is_open:
+            if total_frames > 0 and frame >= total_frames:
+                break
+
+            if not player.poll_events():
+                break
+
+            # 次のフレーム時刻まで待機
             now = time.perf_counter()
+            if now < next_frame_time:
+                time.sleep(max(0, next_frame_time - now))
+
+            # 次のフレーム時刻を更新
+            next_frame_time += frame_interval
 
             # 1フレーム描画
             with Context(img) as ctx:
@@ -198,22 +260,17 @@ def main(width: int = 640, height: int = 360, fps: int = 60):
                     ctx.set_fill_style_rgba(r, g, b)
                     ctx.fill_rect(x, y, box, box)
 
-            # 表示 (PRGB32 ~ BGRA を BGR に変換)
-            rgba = img.asarray()
-            bgr = cv2.cvtColor(rgba, cv2.COLOR_BGRA2BGR)
-            cv2.imshow(win, bgr)
+            # 表示 (BGRA をそのまま渡す)
+            bgra = img.asarray()
+            pts_us = int(frame * 1_000_000 / fps)
+            player.enqueue_video_bgra(bgra, pts_us)
 
-            # イベント処理とフレームレート調整
-            cv2.waitKey(1)
             frame += 1
-            dt = time.perf_counter() - now
-            wait = max(0.0, 1.0 / fps - dt)
-            if wait:
-                time.sleep(wait)
     except KeyboardInterrupt:
-        print("\n終了します...")
-    finally:
-        cv2.destroyAllWindows()
+        pass
+
+    player.close()
+    print("終了します...")
 
 
 if __name__ == "__main__":

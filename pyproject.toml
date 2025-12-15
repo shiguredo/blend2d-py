@@ -30,11 +30,14 @@ Discord = "https://discord.gg/shiguredo"
 
 
 [dependency-groups]
-dev = [{ include-group = "test" }, { include-group = "lint" }]
+dev = [
+    { include-group = "test" },
+    { include-group = "lint" },
+    { include-group = "example" },
+]
 test = ["pytest", "pytest-timeout", "numpy"]
 lint = ["ruff", "ty"]
-example = ["opencv-python"]
-pypi = ["auditwheel", "patchelf"]
+example = ["raw-player"]
 
 [tool.scikit-build]
 minimum-version = "0.11"

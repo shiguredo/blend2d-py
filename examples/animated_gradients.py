@@ -7,10 +7,10 @@
 
 import colorsys
 import math
-
-import cv2
+import time
 
 from blend2d import CompOp, Context, Gradient, Image
+from raw_player import VideoPlayer
 
 
 class AnimatedLinearGradient:
@@ -101,18 +101,46 @@ class AnimatedConicGradient:
 
 def main():
     w, h = 640, 480
+    fps = 60
 
     # 各種グラデーションを作成
     linear_grad = AnimatedLinearGradient(160.0, 120.0, 150.0)
     radial_grad = AnimatedRadialGradient(480.0, 120.0, 80.0)
     conic_grad = AnimatedConicGradient(320.0, 350.0, 80.0)
 
-    print("Ctrl-C で終了します...")
+    # raw-player を初期化
+    player = VideoPlayer(width=w, height=h, title="Animated Gradients")
+
+    # キーコールバックを設定（ESC または q で終了）
+    def on_key(key: int) -> bool:
+        if key == 27 or key == 113:  # ESC or 'q'
+            return False
+        return True
+
+    player.set_key_callback(on_key)
+    player.play()
+
+    print("ESC または q キーで終了します...")
     print("グラデーションが回転・変化します")
+
+    # フレーム生成のペーシング用
+    frame_interval = 1.0 / fps
+    next_frame_time = time.perf_counter()
 
     try:
         frame_count = 0
-        while True:
+        while player.is_open:
+            if not player.poll_events():
+                break
+
+            # 次のフレーム時刻まで待機
+            now = time.perf_counter()
+            if now < next_frame_time:
+                time.sleep(max(0, next_frame_time - now))
+
+            # 次のフレーム時刻を更新
+            next_frame_time += frame_interval
+
             # 新しいフレームを作成
             img = Image(w, h)
 
@@ -135,22 +163,18 @@ def main():
                 conic_grad.draw(ctx)
 
             # NumPy 配列として取得
-            rgba = img.asarray()
+            bgra = img.asarray()
 
-            # OpenCV で表示（BGRA → BGR 変換）
-            bgr = cv2.cvtColor(rgba, cv2.COLOR_BGRA2BGR)
-            cv2.imshow("Animated Gradients", bgr)
-
-            # 60 FPS で表示
-            if cv2.waitKey(16) & 0xFF == ord("q"):
-                break
+            # raw-player で表示
+            pts_us = int(frame_count * 1_000_000 / fps)
+            player.enqueue_video_bgra(bgra, pts_us)
 
             frame_count += 1
     except KeyboardInterrupt:
-        print("\n終了します...")
-    finally:
-        cv2.destroyAllWindows()
-        print(f"総フレーム数: {frame_count}")
+        pass
+
+    player.close()
+    print(f"終了します... (総フレーム数: {frame_count})")
 
 
 if __name__ == "__main__":

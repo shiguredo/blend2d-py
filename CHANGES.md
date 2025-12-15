@@ -16,6 +16,8 @@
 
 ### misc
 
+- [CHANGE] examples の表示ライブラリを OpenCV から raw-player に変更する
+  - @voluntas
 - [CHANGE] モジュール名を `blend2d_ext` に変更する
   - @voluntas
 - [UPDATE] `cmake` の最小バージョンを 4.2 に上げる

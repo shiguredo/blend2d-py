@@ -1,14 +1,13 @@
 """
 基本的な円の描画サンプル
 
-Blend2D で基本的な円を描画し、OpenCV で表示するサンプルです。
+Blend2D で基本的な円を描画し、raw-player で表示するサンプルです。
 """
 
 from math import pi
 
-import cv2
-
 from blend2d import CompOp, Context, Image
+from raw_player import VideoPlayer
 
 
 def main():
@@ -32,20 +31,28 @@ def main():
         ctx.fill_pie(0, 0, min(w, h) * 0.3, 0, 2 * pi)
 
     # NumPy 配列として取得（ゼロコピー）
-    rgba = img.asarray()  # (H, W, 4) uint8 (BGRA)
+    bgra = img.asarray()  # (H, W, 4) uint8 (BGRA)
 
-    # OpenCV で表示（BGRA → BGR 変換）
-    bgr = cv2.cvtColor(rgba, cv2.COLOR_BGRA2BGR)
-    cv2.imshow("Basic Circle", bgr)
+    # raw-player で表示
+    player = VideoPlayer(width=w, height=h, title="Basic Circle")
+    player.enqueue_video_bgra(bgra, 0)
 
-    print("Ctrl-C で終了します...")
-    try:
-        while True:
-            cv2.waitKey(1)
-    except KeyboardInterrupt:
-        print("\n終了します...")
-    finally:
-        cv2.destroyAllWindows()
+    # キーコールバックを設定（ESC または q で終了）
+    def on_key(key: int) -> bool:
+        if key == 27 or key == 113:  # ESC or 'q'
+            return False
+        return True
+
+    player.set_key_callback(on_key)
+    player.play()
+
+    print("ESC または q キーで終了します...")
+    while player.is_open:
+        if not player.poll_events():
+            break
+
+    player.close()
+    print("終了します...")
 
 
 if __name__ == "__main__":

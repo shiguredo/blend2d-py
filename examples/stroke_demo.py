@@ -7,9 +7,8 @@ Stroke デモ
 
 import math
 
-import cv2
-
 from blend2d import CompOp, Context, Gradient, Image, Path
+from raw_player import VideoPlayer
 
 
 def main():
@@ -73,11 +72,20 @@ def main():
         ctx.stroke_path(path)
 
     # NumPy 配列として取得
-    rgba = img.asarray()
+    bgra = img.asarray()
 
-    # OpenCV で表示（BGRA → BGR 変換）
-    bgr = cv2.cvtColor(rgba, cv2.COLOR_BGRA2BGR)
-    cv2.imshow("Stroke Demo", bgr)
+    # raw-player で表示
+    player = VideoPlayer(width=w, height=h, title="Stroke Demo")
+    player.enqueue_video_bgra(bgra, 0)
+
+    # キーコールバックを設定（ESC または q で終了）
+    def on_key(key: int) -> bool:
+        if key == 27 or key == 113:  # ESC or 'q'
+            return False
+        return True
+
+    player.set_key_callback(on_key)
+    player.play()
 
     print("Stroke デモ")
     print("1. 左上: 基本的な矩形 stroke (赤, 線幅 3)")
@@ -86,10 +94,14 @@ def main():
     print("4. 中央下: グラデーション stroke (線幅 8)")
     print("5. 右中央: Path の stroke - 星型 (オレンジ, 線幅 4)")
     print("")
-    print("何かキーを押すと終了します...")
+    print("ESC または q キーで終了します...")
 
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    while player.is_open:
+        if not player.poll_events():
+            break
+
+    player.close()
+    print("終了します...")
 
 
 if __name__ == "__main__":
