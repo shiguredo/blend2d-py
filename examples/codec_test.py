@@ -192,13 +192,23 @@ def main(width=1280, height=720, fps=60, num_shapes=20):
     # Image を1回だけ作成（性能改善）
     img = Image(width, height)
 
+    # フレーム生成のペーシング用
+    frame_interval = 1.0 / fps
+    next_frame_time = time.perf_counter()
+
     frame_num = 0
     try:
         while player.is_open:
             if not player.poll_events():
                 break
 
+            # 次のフレーム時刻まで待機
             now = time.perf_counter()
+            if now < next_frame_time:
+                time.sleep(max(0, next_frame_time - now))
+
+            # 次のフレーム時刻を更新
+            next_frame_time += frame_interval
 
             # 1フレーム描画
             with Context(img) as ctx:
@@ -227,12 +237,6 @@ def main(width=1280, height=720, fps=60, num_shapes=20):
             player.enqueue_video_bgra(bgra, pts_us)
 
             frame_num += 1
-
-            # フレームレート調整
-            dt = time.perf_counter() - now
-            wait = max(0.0, 1.0 / fps - dt)
-            if wait:
-                time.sleep(wait)
 
     except KeyboardInterrupt:
         pass

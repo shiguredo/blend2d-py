@@ -92,13 +92,23 @@ def main():
     print("ESC または q キーで終了します...")
     print("半透明の四角形が画面内を移動し、壁で跳ね返ります")
 
+    # フレーム生成のペーシング用
+    frame_interval = 1.0 / fps
+    next_frame_time = time.perf_counter()
+
     try:
         frame_count = 0
         while player.is_open:
             if not player.poll_events():
                 break
 
+            # 次のフレーム時刻まで待機
             now = time.perf_counter()
+            if now < next_frame_time:
+                time.sleep(max(0, next_frame_time - now))
+
+            # 次のフレーム時刻を更新
+            next_frame_time += frame_interval
 
             # 新しいフレームを作成
             img = Image(w, h)
@@ -136,12 +146,6 @@ def main():
             player.enqueue_video_bgra(bgra, pts_us)
 
             frame_count += 1
-
-            # フレームレート調整
-            dt = time.perf_counter() - now
-            wait = max(0.0, 1.0 / fps - dt)
-            if wait:
-                time.sleep(wait)
     except KeyboardInterrupt:
         pass
 
