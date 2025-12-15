@@ -92,6 +92,7 @@ endif()
 # nanobind モジュール
 nanobind_add_module(blend2d_ext
   NB_DOMAIN "blend2d"
+  FREE_THREADED
   src/blend2d_ext.cpp
 )
 
