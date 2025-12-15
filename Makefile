@@ -5,7 +5,7 @@ wheel:
 
 develop: wheel
 	uv pip install -e . --force-reinstall
-	@cp _build/_blend2d.pyi src/blend2d/ 2>/dev/null || true
+	@cp _build/blend2d_ext.pyi src/blend2d/ 2>/dev/null || true
 
 test: develop
 	uv run pytest tests/ --timeout=10

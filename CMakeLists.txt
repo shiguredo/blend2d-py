@@ -90,62 +90,60 @@ else()
 endif()
 
 # nanobind モジュール
-nanobind_add_module(_blend2d
+nanobind_add_module(blend2d_ext
   NB_DOMAIN "blend2d"
   src/blend2d_ext.cpp
 )
 
 # ビルド順序を保証するため依存関係を追加
-add_dependencies(_blend2d blend2d_ep)
+add_dependencies(blend2d_ext blend2d_ep)
 
 # インクルードディレクトリ
 find_package(Threads)
-target_include_directories(_blend2d PRIVATE ${BLEND2D_INSTALL}/include)
+target_include_directories(blend2d_ext PRIVATE ${BLEND2D_INSTALL}/include)
 
 # ライブラリをリンク
 # Windows では絶対パスを明確に指定
 if(WIN32)
   # Windows では文字列として扱って絶対パスを確保
-  target_link_libraries(_blend2d PRIVATE
+  target_link_libraries(blend2d_ext PRIVATE
     "${BLEND2D_LIB}"
     Threads::Threads
   )
 else()
   # プラットフォーム固有のライブラリ
   if(APPLE)
-    target_link_libraries(_blend2d PRIVATE ${BLEND2D_LIB} Threads::Threads)
+    target_link_libraries(blend2d_ext PRIVATE ${BLEND2D_LIB} Threads::Threads)
   elseif(UNIX)
-    target_link_libraries(_blend2d PRIVATE ${BLEND2D_LIB} Threads::Threads rt)
+    target_link_libraries(blend2d_ext PRIVATE ${BLEND2D_LIB} Threads::Threads rt)
   endif()
 endif()
 
 # コンパイルオプションとマクロ定義
 # 静的ライブラリを使用しているため BL_STATIC を定義
-target_compile_definitions(_blend2d PRIVATE BL_STATIC)
+target_compile_definitions(blend2d_ext PRIVATE BL_STATIC)
 
 if(NOT WIN32)
-  target_compile_options(_blend2d PRIVATE -fvisibility=hidden)
+  target_compile_options(blend2d_ext PRIVATE -fvisibility=hidden)
 endif()
-
-set_target_properties(_blend2d PROPERTIES OUTPUT_NAME "_blend2d")
 
 # 型スタブ (.pyi) ファイルの自動生成
 nanobind_add_stub(
   blend2d_stub
-  MODULE _blend2d
-  OUTPUT _blend2d.pyi
-  PYTHON_PATH $<TARGET_FILE_DIR:_blend2d>
-  DEPENDS _blend2d
+  MODULE blend2d_ext
+  OUTPUT blend2d_ext.pyi
+  PYTHON_PATH $<TARGET_FILE_DIR:blend2d_ext>
+  DEPENDS blend2d_ext
   MARKER_FILE py.typed
 )
 
 # Wheel に配置するためのインストール先を指定
 set(PY_PACKAGE "blend2d")
-install(TARGETS _blend2d
+install(TARGETS blend2d_ext
   LIBRARY DESTINATION ${PY_PACKAGE}
   RUNTIME DESTINATION ${PY_PACKAGE}
 )
 
 # 型スタブファイルとマーカーファイルをインストール
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/_blend2d.pyi DESTINATION ${PY_PACKAGE})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/blend2d_ext.pyi DESTINATION ${PY_PACKAGE})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/py.typed DESTINATION ${PY_PACKAGE})
