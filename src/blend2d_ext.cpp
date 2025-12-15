@@ -332,7 +332,7 @@ void DrawContext::stroke_path(PyPath& p) {
 }
 
 // モジュール定義
-NB_MODULE(_blend2d, m) {
+NB_MODULE(blend2d_ext, m) {
   m.doc() = "Blend2D bindings (nanobind) with realtime-friendly wrappers";
 
   // ヘッダの存在確認

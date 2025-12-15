@@ -5,8 +5,7 @@ wheel:
 
 develop: wheel
 	uv pip install -e . --force-reinstall
-	@echo "Copying .pyi stub file..."
-	@cp _build/cp*/_webcodecs_py.pyi src/webcodecs/ 2>/dev/null || true
+	@cp _build/blend2d_ext.pyi src/blend2d/ 2>/dev/null || true
 
 test: develop
 	uv run pytest tests/ --timeout=10

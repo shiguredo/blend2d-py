@@ -1,4 +1,4 @@
-from ._blend2d import (
+from .blend2d_ext import (
     version as _native_version,
     Image,
     Context,
