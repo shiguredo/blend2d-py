@@ -75,8 +75,7 @@ jobs:
       - name: Repair wheel with auditwheel
         shell: bash
         run: |
-          uv sync --only-group pypi --frozen
-          uv run auditwheel repair dist/*.whl --strip --only-plat
+          uvx auditwheel repair dist/*.whl --strip --only-plat
       - name: Upload Repaired Wheels
         uses: actions/upload-artifact@v6
         with:

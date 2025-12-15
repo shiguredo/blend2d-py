@@ -38,7 +38,6 @@ dev = [
 test = ["pytest", "pytest-timeout", "numpy"]
 lint = ["ruff", "ty"]
 example = ["raw-player"]
-pypi = ["auditwheel", "patchelf"]
 
 [tool.scikit-build]
 minimum-version = "0.11"
