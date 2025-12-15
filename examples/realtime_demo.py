@@ -1,16 +1,15 @@
 """
 リアルタイム描画デモ
 
-Blend2D でリアルタイムに図形とテキストを描画し、OpenCV で表示するサンプルです。
+Blend2D でリアルタイムに図形とテキストを描画し、raw-player で表示するサンプルです。
 7 セグメント風のデジタル時計、回転する円弧、横に流れるカラーボックスを描画します。
 """
 
 import time
 from math import pi, sin
 
-import cv2
-
 from blend2d import CompOp, Context, Image, Path
+from raw_player import VideoPlayer
 
 
 def draw_7segment(ctx: Context, digit: int, x: float, y: float, w: float, h: float) -> None:
@@ -151,12 +150,25 @@ def main(width: int = 640, height: int = 360, fps: int = 60):
     img = Image(width, height)
     start = time.perf_counter()
     frame = 0
-    win = "blend2d"
-    cv2.namedWindow(win, cv2.WINDOW_AUTOSIZE)
 
-    print("Ctrl-C で終了します...")
+    # raw-player を初期化
+    player = VideoPlayer(width=width, height=height, title="Blend2D Realtime Demo")
+
+    # キーコールバックを設定（ESC または q で終了）
+    def on_key(key: int) -> bool:
+        if key == 27 or key == 113:  # ESC or 'q'
+            return False
+        return True
+
+    player.set_key_callback(on_key)
+    player.play()
+
+    print("ESC または q キーで終了します...")
     try:
-        while True:
+        while player.is_open:
+            if not player.poll_events():
+                break
+
             now = time.perf_counter()
 
             # 1フレーム描画
@@ -198,22 +210,22 @@ def main(width: int = 640, height: int = 360, fps: int = 60):
                     ctx.set_fill_style_rgba(r, g, b)
                     ctx.fill_rect(x, y, box, box)
 
-            # 表示 (PRGB32 ~ BGRA を BGR に変換)
-            rgba = img.asarray()
-            bgr = cv2.cvtColor(rgba, cv2.COLOR_BGRA2BGR)
-            cv2.imshow(win, bgr)
+            # 表示 (BGRA をそのまま渡す)
+            bgra = img.asarray()
+            pts_us = int(frame * 1_000_000 / fps)
+            player.enqueue_video_bgra(bgra, pts_us)
 
-            # イベント処理とフレームレート調整
-            cv2.waitKey(1)
+            # フレームレート調整
             frame += 1
             dt = time.perf_counter() - now
             wait = max(0.0, 1.0 / fps - dt)
             if wait:
                 time.sleep(wait)
     except KeyboardInterrupt:
-        print("\n終了します...")
-    finally:
-        cv2.destroyAllWindows()
+        pass
+
+    player.close()
+    print("終了します...")
 
 
 if __name__ == "__main__":

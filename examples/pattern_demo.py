@@ -5,9 +5,8 @@ Pattern デモ
 Image をテクスチャとして使用するパターン塗りつぶしのサンプルです。
 """
 
-import cv2
-
 from blend2d import CompOp, Context, ExtendMode, Image, Pattern
+from raw_player import VideoPlayer
 
 
 def create_checkerboard_pattern(size: int, color1: tuple, color2: tuple) -> Image:
@@ -88,11 +87,20 @@ def main():
         ctx.fill_rect(450.0, 350.0, 300.0, 200.0)
 
     # NumPy 配列として取得
-    rgba = img.asarray()
+    bgra = img.asarray()
 
-    # OpenCV で表示（BGRA → BGR 変換）
-    bgr = cv2.cvtColor(rgba, cv2.COLOR_BGRA2BGR)
-    cv2.imshow("Pattern Demo", bgr)
+    # raw-player で表示
+    player = VideoPlayer(width=w, height=h, title="Pattern Demo")
+    player.enqueue_video_bgra(bgra, 0)
+
+    # キーコールバックを設定（ESC または q で終了）
+    def on_key(key: int) -> bool:
+        if key == 27 or key == 113:  # ESC or 'q'
+            return False
+        return True
+
+    player.set_key_callback(on_key)
+    player.play()
 
     print("Pattern デモ")
     print("1. 左上: チェック柄パターン (REPEAT)")
@@ -100,10 +108,14 @@ def main():
     print("3. 左下: チェック柄パターンの円 (PAD)")
     print("4. 右下: パターンの一部を使用 (area 指定)")
     print("")
-    print("何かキーを押すと終了します...")
+    print("ESC または q キーで終了します...")
 
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    while player.is_open:
+        if not player.poll_events():
+            break
+
+    player.close()
+    print("終了します...")
 
 
 if __name__ == "__main__":

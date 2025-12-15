@@ -5,10 +5,10 @@
 """
 
 import random
-
-import cv2
+import time
 
 from blend2d import CompOp, Context, Image
+from raw_player import VideoPlayer
 
 
 class AnimatedRect:
@@ -49,6 +49,7 @@ class AnimatedRect:
 
 def main():
     w, h = 640, 480
+    fps = 120
 
     # アニメーションする四角形を作成（ランダムサイズ）
     colors = [
@@ -76,11 +77,29 @@ def main():
 
         rects.append(AnimatedRect(x, y, width, height, vx, vy, *color, alpha))
 
-    print("Ctrl-C で終了します...")
+    # raw-player を初期化
+    player = VideoPlayer(width=w, height=h, title="Animated Rectangles")
+
+    # キーコールバックを設定（ESC または q で終了）
+    def on_key(key: int) -> bool:
+        if key == 27 or key == 113:  # ESC or 'q'
+            return False
+        return True
+
+    player.set_key_callback(on_key)
+    player.play()
+
+    print("ESC または q キーで終了します...")
     print("半透明の四角形が画面内を移動し、壁で跳ね返ります")
 
     try:
-        while True:
+        frame_count = 0
+        while player.is_open:
+            if not player.poll_events():
+                break
+
+            now = time.perf_counter()
+
             # 新しいフレームを作成
             img = Image(w, h)
 
@@ -110,18 +129,24 @@ def main():
                     rect.draw(ctx)
 
             # NumPy 配列として取得
-            rgba = img.asarray()
+            bgra = img.asarray()
 
-            # OpenCV で表示（BGRA → BGR 変換）
-            bgr = cv2.cvtColor(rgba, cv2.COLOR_BGRA2BGR)
-            cv2.imshow("Animated Rectangles", bgr)
+            # raw-player で表示
+            pts_us = int(frame_count * 1_000_000 / fps)
+            player.enqueue_video_bgra(bgra, pts_us)
 
-            # 120 FPS で表示
-            cv2.waitKey(8)
+            frame_count += 1
+
+            # フレームレート調整
+            dt = time.perf_counter() - now
+            wait = max(0.0, 1.0 / fps - dt)
+            if wait:
+                time.sleep(wait)
     except KeyboardInterrupt:
-        print("\n終了します...")
-    finally:
-        cv2.destroyAllWindows()
+        pass
+
+    player.close()
+    print("終了します...")
 
 
 if __name__ == "__main__":
