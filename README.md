@@ -20,7 +20,7 @@ Please read <https://github.com/shiguredo/oss/blob/master/README.en.md> before u
 
 高性能 2D ベクターグラフィックエンジン [Blend2D](https://blend2d.com/) の Python バインディングです。
 
-https://github.com/user-attachments/assets/66d5d1ff-5ef8-4d56-a8cf-9b2f4e8c9b4b
+<https://github.com/user-attachments/assets/66d5d1ff-5ef8-4d56-a8cf-9b2f4e8c9b4b>
 
 120 fps での映像なども描画可能です。
 
@@ -28,11 +28,11 @@ https://github.com/user-attachments/assets/66d5d1ff-5ef8-4d56-a8cf-9b2f4e8c9b4b
 
 - macOS 26 arm64
 - macOS 15 arm64
-- macOS 14 arm64
 - Ubuntu 24.04 x86_64
 - Ubuntu 24.04 arm64
 - Ubuntu 22.04 x86_64
 - Ubuntu 22.04 arm64
+- Windows Server 2025 x86_64
 - Windows 11 x86_64
 
 ## 対応 Python
