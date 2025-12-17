@@ -20,9 +20,9 @@ Please read <https://github.com/shiguredo/oss/blob/master/README.en.md> before u
 
 高性能 2D ベクターグラフィックエンジン [Blend2D](https://blend2d.com/) の Python バインディングです。
 
-https://github.com/user-attachments/assets/66d5d1ff-5ef8-4d56-a8cf-9b2f4e8c9b4b
+<https://github.com/user-attachments/assets/b0edb8e0-c426-4523-ac87-e66c9aa04e61>
 
-120 fps での映像なども描画可能です。
+blend2d-py と [raw-player](https://github.com/shiguredo/raw-player) を組み合わせて 120 fps での映像なども描画可能です。
 
 ## 対応プラットフォーム
 
