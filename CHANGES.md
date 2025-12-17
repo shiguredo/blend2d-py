@@ -11,6 +11,10 @@
 
 ## develop
 
+## 2025.5.0
+
+**リリース日**:: 2025-12-17
+
 - [ADD] Python 3.13t / 3.14t (Free Threading) に対応する
   - @voluntas
 
