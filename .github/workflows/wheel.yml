@@ -36,6 +36,11 @@ jobs:
         with:
           enable-cache: false
           python-version: ${{ matrix.python_version }}
+      - name: Cache _deps
+        uses: actions/cache@v5
+        with:
+          path: _deps
+          key: deps-${{ matrix.platform.name }}-${{ hashFiles('CMakeLists.txt', 'deps.json') }}
       - run: uv build --wheel --out-dir wheelhouse
       - name: Upload Artifact
         uses: actions/upload-artifact@v6
@@ -70,6 +75,11 @@ jobs:
         with:
           enable-cache: false
           python-version: ${{ matrix.python_version }}
+      - name: Cache _deps
+        uses: actions/cache@v5
+        with:
+          path: _deps
+          key: deps-${{ matrix.platform.name }}-${{ hashFiles('CMakeLists.txt', 'deps.json') }}
       - name: Build wheel
         run: uv build --wheel
       - name: Repair wheel with auditwheel
@@ -103,6 +113,11 @@ jobs:
         with:
           enable-cache: true
           python-version: ${{ matrix.python_version }}
+      - name: Cache _deps
+        uses: actions/cache@v5
+        with:
+          path: _deps
+          key: deps-${{ matrix.platform.name }}-${{ hashFiles('CMakeLists.txt', 'deps.json') }}
       - name: Build wheel
         run: uv build --wheel --out-dir wheelhouse
       - name: Upload Wheels
