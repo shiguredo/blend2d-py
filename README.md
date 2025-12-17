@@ -1,6 +1,7 @@
 # blend2d-py
 
 [![PyPI](https://img.shields.io/pypi/v/blend2d-py)](https://pypi.org/project/blend2d-py/)
+[![SPEC 0 — Minimum Supported Dependencies](https://img.shields.io/badge/SPEC-0-green?labelColor=%23004811&color=%235CA038)](https://scientific-python.org/specs/spec-0000/)
 [![image](https://img.shields.io/pypi/pyversions/blend2d-py.svg)](https://pypi.python.org/pypi/blend2d-py)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Actions status](https://github.com/shiguredo/blend2d-py/workflows/wheel/badge.svg)](https://github.com/shiguredo/blend2d-py/actions)
@@ -19,7 +20,7 @@ Please read <https://github.com/shiguredo/oss/blob/master/README.en.md> before u
 
 高性能 2D ベクターグラフィックエンジン [Blend2D](https://blend2d.com/) の Python バインディングです。
 
-[![Image from Gyazo](https://i.gyazo.com/87e61ff612c80c08e36380847b553196.gif)](https://gyazo.com/87e61ff612c80c08e36380847b553196)
+https://github.com/user-attachments/assets/66d5d1ff-5ef8-4d56-a8cf-9b2f4e8c9b4b
 
 120 fps での映像なども描画可能です。
 
@@ -37,7 +38,9 @@ Please read <https://github.com/shiguredo/oss/blob/master/README.en.md> before u
 ## 対応 Python
 
 - 3.14
+- 3.14t
 - 3.13
+- 3.13t
 - 3.12
 
 ## インストール
