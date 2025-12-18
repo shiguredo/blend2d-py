@@ -24,6 +24,21 @@ Please read <https://github.com/shiguredo/oss/blob/master/README.en.md> before u
 
 blend2d-py と [raw-player](https://github.com/shiguredo/raw-player) を組み合わせて 120 fps での映像なども描画可能です。
 
+## 特徴
+
+- [numpy.ndarray](https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html) によるピクセルデータの受け渡し
+- ピクセルデータへの直接アクセス (`Image.asarray()` / `Image.memoryview()`)
+- 基本図形の描画 (四角形、円、扇形)
+- ベクターパスによる自由な図形描画 (直線、ベジェ曲線、円弧)
+- 線形/放射状/円錐グラデーション
+- パターン塗りつぶし
+- ストローク描画 (線幅、キャップ、ジョイン)
+- アルファブレンディング
+- 座標変換 (平行移動、回転)
+- マルチスレッドレンダリング
+- テキスト描画 (macOS のみ)
+- Python [Free-Threading](https://docs.python.org/3/howto/free-threading-python.html)
+
 ## 対応プラットフォーム
 
 - macOS 26 arm64
@@ -49,10 +64,7 @@ blend2d-py と [raw-player](https://github.com/shiguredo/raw-player) を組み�
 uv add blend2d-py
 ```
 
-## 使い方（最小 API）
-
-- 提供: `Image`, `Context`, `Path`, `CompOp`, `FontFace`, `Font`
-- ピクセルアクセス: `Image.asarray()` / `Image.memoryview()`（ゼロコピー）
+## 使い方
 
 ### 基本的な円の描画
 
@@ -79,7 +91,7 @@ with Context(img) as ctx:
     ctx.set_fill_style_rgba(255, 255, 255, 255)
     ctx.fill_pie(0, 0, min(w, h)*0.3, 0, 2*pi)
 
-    # NumPy 配列として取得（ゼロコピー）
+    # NumPy 配列として取得
     rgba = img.asarray()  # (H, W, 4) uint8 (BGRA)
 ```
 
@@ -196,10 +208,235 @@ with Context(img) as ctx:
 > [!NOTE]
 >
 > - テキスト描画機能は macOS のシステムフォントを使用するため、macOS でのみ動作します
-
-> [!WARNING]
->
 > - `asarray()` / `memoryview()` のビューは `Image` の寿命に依存します
+
+## API リファレンス
+
+### Image
+
+描画対象となる画像バッファを管理するクラス。
+
+```python
+img = Image(width, height)
+```
+
+| メソッド | 説明 |
+|----------|------|
+| `asarray()` | NumPy 配列として取得 (H, W, 4) uint8 BGRA |
+| `memoryview()` | PEP 3118 memoryview を取得 (1D, size=stride*height) |
+
+| プロパティ | 説明 |
+|------------|------|
+| `width` | 画像の幅 |
+| `height` | 画像の高さ |
+
+### Context
+
+描画コンテキストを管理するクラス。with 文で使用可能。
+
+```python
+with Context(img, thread_count=0) as ctx:
+    ctx.fill_all()
+```
+
+#### コンテキスト管理
+
+| メソッド | 説明 |
+|----------|------|
+| `end()` | コンテキストを終了 |
+| `save()` | 現在の状態をスタックに保存 |
+| `restore()` | 保存した状態を復元 |
+
+#### 塗りつぶしスタイル
+
+| メソッド | 説明 |
+|----------|------|
+| `set_comp_op(op)` | 合成モードを設定 |
+| `set_fill_style_rgba(r, g, b, a=255)` | 塗りつぶし色を RGBA で設定 |
+| `set_fill_style_gradient(gradient)` | 塗りつぶしをグラデーションに設定 |
+| `set_fill_style_pattern(pattern)` | 塗りつぶしをパターンに設定 |
+
+#### ストロークスタイル
+
+| メソッド | 説明 |
+|----------|------|
+| `set_stroke_style_rgba(r, g, b, a=255)` | ストローク色を RGBA で設定 |
+| `set_stroke_style_gradient(gradient)` | ストロークをグラデーションに設定 |
+| `set_stroke_style_pattern(pattern)` | ストロークをパターンに設定 |
+| `set_stroke_width(width)` | ストローク幅を設定 |
+| `set_stroke_miter_limit(miter_limit)` | マイターリミットを設定 |
+| `set_stroke_join(stroke_join)` | ジョインスタイルを設定 |
+| `set_stroke_caps(stroke_cap)` | キャップスタイルを設定 |
+
+#### 座標変換
+
+| メソッド | 説明 |
+|----------|------|
+| `translate(x, y)` | 座標系を平行移動 |
+| `rotate(rad)` | 座標系を回転 (ラジアン) |
+
+#### 塗りつぶし描画
+
+| メソッド | 説明 |
+|----------|------|
+| `fill_all()` | 全体を塗りつぶし |
+| `fill_rect(x, y, w, h)` | 四角形を塗りつぶし |
+| `fill_circle(cx, cy, r)` | 円を塗りつぶし |
+| `fill_pie(cx, cy, r, start, sweep)` | 扇形を塗りつぶし |
+| `fill_path(path)` | パスを塗りつぶし |
+| `fill_utf8_text(x, y, font, text)` | テキストを描画 (macOS のみ) |
+
+#### ストローク描画
+
+| メソッド | 説明 |
+|----------|------|
+| `stroke_rect(x, y, w, h)` | 四角形のストローク |
+| `stroke_circle(cx, cy, r)` | 円のストローク |
+| `stroke_path(path)` | パスのストローク |
+
+### Path
+
+ベクターパスを作成するクラス。
+
+```python
+path = Path()
+path.move_to(x, y)
+path.line_to(x, y)
+path.close()
+```
+
+| メソッド | 説明 |
+|----------|------|
+| `move_to(x, y)` | 指定座標に移動 |
+| `line_to(x, y)` | 直線を描画 |
+| `quad_to(x1, y1, x2, y2)` | 二次ベジェ曲線を描画 |
+| `cubic_to(x1, y1, x2, y2, x3, y3)` | 三次ベジェ曲線を描画 |
+| `smooth_quad_to(x2, y2)` | スムーズな二次ベジェ曲線 |
+| `smooth_cubic_to(x2, y2, x3, y3)` | スムーズな三次ベジェ曲線 |
+| `arc_to(cx, cy, rx, ry, start, sweep, force_move_to=False)` | 円弧を描画 |
+| `elliptic_arc_to(rx, ry, x_axis_rotation, large_arc_flag, sweep_flag, x, y)` | 楕円弧を描画 (SVG 互換) |
+| `close()` | パスを閉じる |
+
+### Gradient
+
+グラデーションを定義するクラス。
+
+```python
+gradient = Gradient()
+gradient.create_linear(x0, y0, x1, y1)
+gradient.add_stop(0.0, 255, 0, 0)    # 赤
+gradient.add_stop(1.0, 0, 0, 255)    # 青
+```
+
+| メソッド | 説明 |
+|----------|------|
+| `create_linear(x0, y0, x1, y1, extend_mode=PAD)` | 線形グラデーションを作成 |
+| `create_radial(x0, y0, x1, y1, r0, extend_mode=PAD, r1=0.0)` | 放射状グラデーションを作成 |
+| `create_conic(x0, y0, angle, extend_mode=PAD, repeat=1.0)` | 円錐グラデーションを作成 |
+| `add_stop(offset, r, g, b, a=255)` | カラーストップを追加 (offset: 0.0〜1.0) |
+| `reset_stops()` | 全てのカラーストップをリセット |
+
+| プロパティ | 説明 |
+|------------|------|
+| `stop_count` | カラーストップの数 |
+| `gradient_type` | グラデーションの種類 (LINEAR / RADIAL / CONIC) |
+| `extend_mode` | 拡張モード |
+
+### Pattern
+
+パターン塗りつぶしを定義するクラス。
+
+```python
+pattern = Pattern()
+pattern.create(image, extend_mode=REPEAT)
+```
+
+| メソッド | 説明 |
+|----------|------|
+| `create(image, extend_mode=REPEAT)` | パターンを作成 |
+| `set_area(x, y, w, h)` | パターン領域を設定 |
+| `reset_area()` | パターン領域をリセット |
+| `set_extend_mode(extend_mode)` | 拡張モードを設定 |
+
+| プロパティ | 説明 |
+|------------|------|
+| `extend_mode` | 拡張モード |
+
+### FontFace
+
+フォントフェイスを管理するクラス。
+
+```python
+face = FontFace()
+face.create_from_file("/System/Library/Fonts/Helvetica.ttc")
+```
+
+| メソッド | 説明 |
+|----------|------|
+| `create_from_file(filename)` | ファイルからフォントを読み込み |
+
+| プロパティ | 説明 |
+|------------|------|
+| `family_name` | フォントファミリー名 |
+| `weight` | フォントウェイト |
+
+### Font
+
+フォントインスタンスを管理するクラス。
+
+```python
+font = Font(face, size=48.0)
+```
+
+| プロパティ | 説明 |
+|------------|------|
+| `size` | フォントサイズ |
+
+### 列挙型
+
+#### CompOp (合成モード)
+
+| 値 | 説明 |
+|----|------|
+| `SRC_COPY` | ソースをそのままコピー (不透明描画) |
+| `SRC_OVER` | ソースを上に重ねる (アルファブレンディング) |
+
+#### ExtendMode (拡張モード)
+
+| 値 | 説明 |
+|----|------|
+| `PAD` | 端のピクセルで拡張 |
+| `REPEAT` | 繰り返し |
+| `REFLECT` | 反射 (ミラー) |
+
+#### GradientType (グラデーション種類)
+
+| 値 | 説明 |
+|----|------|
+| `LINEAR` | 線形グラデーション |
+| `RADIAL` | 放射状グラデーション |
+| `CONIC` | 円錐グラデーション |
+
+#### StrokeCap (ストロークキャップ)
+
+| 値 | 説明 |
+|----|------|
+| `BUTT` | 端で切断 |
+| `SQUARE` | 四角形で延長 |
+| `ROUND` | 丸く延長 |
+| `ROUND_REV` | 内側に丸く |
+| `TRIANGLE` | 三角形で延長 |
+| `TRIANGLE_REV` | 内側に三角形 |
+
+#### StrokeJoin (ストロークジョイン)
+
+| 値 | 説明 |
+|----|------|
+| `MITER_CLIP` | マイター結合 (クリップ) |
+| `MITER_BEVEL` | マイター結合 (ベベル) |
+| `MITER_ROUND` | マイター結合 (丸) |
+| `BEVEL` | ベベル結合 |
+| `ROUND` | 丸結合 |
 
 ## ビルド
 
@@ -218,11 +455,6 @@ uv run python examples/realtime_demo.py
 
 - PRGB32（実質 BGRA）→ `cv2.cvtColor(..., cv2.COLOR_BGRA2BGR)` で表示
 - 詳細手順と他のサンプルは `examples/README.md` を参照
-
-## PEP 3118 バッファ
-
-- `Image.memoryview()` で `stride*height` バイトの 1D バッファを公開します
-- NumPy での多次元化や OpenCV 表示は `docs/buffer.md` を参照してください
 
 ## Blend2D ライセンス
 
