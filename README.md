@@ -55,7 +55,6 @@ blend2d-py と [raw-player](https://github.com/shiguredo/raw-player) を組み�
 - 3.14
 - 3.14t
 - 3.13
-- 3.13t
 - 3.12
 
 ## インストール
