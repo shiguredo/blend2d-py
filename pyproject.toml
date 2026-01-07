@@ -32,12 +32,12 @@ Discord = "https://discord.gg/shiguredo"
 [dependency-groups]
 dev = [
     { include-group = "test" },
-    { include-group = "lint" },
     { include-group = "example" },
+    { include-group = "lint" },
 ]
 test = ["pytest", "pytest-timeout", "numpy"]
-lint = ["ruff", "ty"]
 example = ["raw-player"]
+lint = ["ruff", "ty"]
 
 [tool.scikit-build]
 minimum-version = "0.11.3"
